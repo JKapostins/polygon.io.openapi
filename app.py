@@ -11,3 +11,31 @@
 
 
 
+# Import necessary libraries
+import requests
+from bs4 import BeautifulSoup
+
+# Function to fetch and parse the HTML document
+def fetch_documentation():
+    url = 'https://polygon.io/docs/stocks/getting-started'
+    response = requests.get(url)
+    if response.status_code == 200:
+        return BeautifulSoup(response.text, 'html.parser')
+    else:
+        raise Exception(f'Failed to fetch documentation, status code: {response.status_code}')
+
+# Function to process the HTML and extract relevant information
+def process_documentation():
+    soup = fetch_documentation()
+    # Discard the first nav element (header)
+    header_nav = soup.find('nav')
+    header_nav.decompose()
+
+    # Extract the second nav element (main navigation/sidebar)
+    main_nav = soup.find('nav')
+    with open('sidebar_hierarchy.html', 'w') as file:
+        file.write(str(main_nav))
+
+# Main execution
+if __name__ == '__main__':
+    process_documentation()
