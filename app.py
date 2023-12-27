@@ -20,12 +20,10 @@ def convert_nav_to_markdown(nav_element):
         if item.name == 'a':
             markdown += f"### [{item.text.strip()}]({item['href']})\n"
         elif item.name == 'ul':
-            #TODO: Remove a # from the beginnning of the markdown
-            m=0
+            markdown += "\n"
             
         elif item.name == 'li':
-            #TODO: Remove a # from the beginnning of the markdown
-            m=0
+            markdown += "    "  # Indentation for hierarchy
     return markdown
 
 def save_markdown_to_file(markdown_content, filename):
