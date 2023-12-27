@@ -11,3 +11,37 @@
 
 
 
+# Import necessary libraries
+import requests
+from bs4 import BeautifulSoup
+
+# Function to fetch and parse HTML document
+def fetch_and_parse_document(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        return BeautifulSoup(response.text, 'html.parser')
+    else:
+        raise Exception(f"Failed to fetch the document, status code: {response.status_code}")
+
+# Function to write the first div element to body.html
+def write_first_div_to_file(soup, filename):
+    first_div = soup.find('div')
+    with open(filename, 'w') as file:
+        file.write(str(first_div))
+
+# Function to dump the second nav element to an HTML file
+def dump_second_nav_to_file(soup, filename):
+    nav_elements = soup.find_all('nav')
+    if len(nav_elements) >= 2:
+        second_nav = nav_elements[1]
+        with open(filename, 'w') as file:
+            file.write(str(second_nav))
+    else:
+        raise Exception("Second nav element not found.")
+
+# Main execution
+if __name__ == "__main__":
+    url = "https://polygon.io/docs/stocks/getting-started"
+    soup = fetch_and_parse_document(url)
+    write_first_div_to_file(soup, 'body.html')
+    dump_second_nav_to_file(soup, 'sidebar.html')
