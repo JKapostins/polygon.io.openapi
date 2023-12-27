@@ -16,6 +16,7 @@
 # Import necessary libraries
 import requests
 from bs4 import BeautifulSoup
+import html2text
 
 # Function to fetch and parse the HTML document
 def fetch_documentation():
@@ -37,6 +38,18 @@ def process_documentation():
     main_nav = soup.find('nav')
     with open('sidebar_hierarchy.html', 'w') as file:
         file.write(str(main_nav))
+
+    # Convert the html file to a markdown file
+    convert_html_to_markdown('sidebar_hierarchy.html')
+
+# Function to convert HTML to Markdown
+def convert_html_to_markdown(html_file_path):
+    with open(html_file_path, 'r') as file:
+        html_content = file.read()
+    markdown_content = html2text.html2text(html_content)
+    markdown_file_path = html_file_path.replace('.html', '.md')
+    with open(markdown_file_path, 'w') as file:
+        file.write(markdown_content)
 
 # Main execution
 if __name__ == '__main__':
