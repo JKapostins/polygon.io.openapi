@@ -9,6 +9,8 @@
 # 3.) The Second nav element is the main navigation (side bar) which contains links and hierarchy to the various endpoints.
 #     Dump this element to an html file so we can use it for hierarchy reference.
 
+# 4.) Convert the html file to a markdown file
+
 
 
 # Import necessary libraries
