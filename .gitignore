@@ -1,1 +1,11 @@
 .aider*
+__pycache__/
+.vscode/
+.idea/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+*.swp
+*.bak
+*.tmp
