@@ -13,4 +13,50 @@
 
 # 5.) Find all the anchors in the body.html
 
-# 6.) For each anchor, find the corresponding div element and write it to a file called {endponit_name}_endpoint.html
+# 6.) For each anchor, find the corresponding div element and write it to a file called {endponit_name}_endpoint.htmlimport requests
+from bs4 import BeautifulSoup
+
+def parse_html_document(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        return BeautifulSoup(response.text, 'html.parser')
+    else:
+        raise Exception(f"Failed to retrieve the document. Status code: {response.status_code}")
+
+def remove_first_nav_element(soup):
+    nav = soup.find('nav')
+    if nav:
+        nav.decompose()
+
+def extract_and_save_main_nav(soup):
+    nav = soup.find('nav')
+    if nav:
+        with open('sidebar.html', 'w') as file:
+            file.write(str(nav))
+        nav.decompose()
+
+def extract_and_save_main_content(soup):
+    div = soup.find('div')
+    if div:
+        with open('body.html', 'w') as file:
+            file.write(str(div))
+
+def find_anchors_and_corresponding_divs():
+    with open('body.html', 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
+    anchors = soup.find_all('a')
+    for anchor in anchors:
+        endpoint_name = anchor.get('name', '')
+        if endpoint_name:
+            div = soup.find('div', {'id': endpoint_name})
+            if div:
+                with open(f'{endpoint_name}_endpoint.html', 'w') as file:
+                    file.write(str(div))
+
+if __name__ == '__main__':
+    url = 'https://polygon.io/docs/stocks/getting-started'
+    soup = parse_html_document(url)
+    remove_first_nav_element(soup)
+    extract_and_save_main_nav(soup)
+    extract_and_save_main_content(soup)
+    find_anchors_and_corresponding_divs()
