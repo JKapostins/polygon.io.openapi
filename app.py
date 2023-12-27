@@ -14,6 +14,8 @@
 # 5.) Find all the anchors in the body.html
 
 # 6.) For each anchor, find the corresponding div element and write it to a file called {endponit_name}_endpoint.htmlimport requests
+# Missing import for requests added
+import requests
 from bs4 import BeautifulSoup
 
 def parse_html_document(url):
