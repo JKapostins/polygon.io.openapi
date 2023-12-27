@@ -18,9 +18,10 @@ def convert_nav_to_markdown(nav_element):
     markdown = ""
     for item in nav_element.find_all(['a', 'ul', 'li']):
         if item.name == 'a':
-            markdown += f"# [{item.text.strip()}]({item['href']})\n"
+            markdown += f"[{item.text.strip()}]({item['href']})\n"
         elif item.name == 'ul':
-            markdown += "~"
+            # Remove a '#' sign from the beginning of the markdown for each 'ul' element
+            markdown = markdown.rstrip('\n').rstrip('#') + '\n'
         elif item.name == 'li':
             markdown += "-"  # Indentation for hierarchy
     return markdown
