@@ -42,6 +42,7 @@ def extract_and_save_main_content(soup):
     if div:
         with open('body.html', 'w') as file:
             file.write(str(div))
+from markdownify import markdownify as md
 
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
@@ -62,6 +63,12 @@ def find_anchors_and_corresponding_divs():
             if endpoint_element:
                 with open(f'{endpoint_name}_endpoint.html', 'w') as file:
                     file.write(str(endpoint_element))
+                convert_to_markdown_and_save(endpoint_name, endpoint_element)
+
+def convert_to_markdown_and_save(endpoint_name, html_content):
+    markdown_content = md(str(html_content))
+    with open(f'{endpoint_name}_endpoint.md', 'w') as file:
+        file.write(markdown_content)
                 
                 #TODO: Convert the endpoint_element to markdown and save it to a file called {endpoint_name}_endpoint.md
                 
