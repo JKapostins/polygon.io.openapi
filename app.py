@@ -4,44 +4,13 @@
 
 # 1.) Parse the html document found at https://polygon.io/docs/stocks/getting-started 
 
-# 2.) write the first div element to body.html
+# 2.) Remove the first nav element from the document
 
 # 3.) The Second nav element is the main navigation (side bar) which contains links and hierarchy to the various endpoints.
-#     Dump this element to an html file so we can use it for hierarchy reference.
+#     Dump this element to an html file so we can use it for hierarchy reference and then remove it from the document.
 
+# 4.) The first div element is the main content of the page, write this to a file called body.html
 
+# 5.) Find all the anchors in the body.html
 
-# Import necessary libraries
-import requests
-from bs4 import BeautifulSoup
-
-# Function to fetch and parse HTML document
-def fetch_and_parse_document(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        return BeautifulSoup(response.text, 'html.parser')
-    else:
-        raise Exception(f"Failed to fetch the document, status code: {response.status_code}")
-
-# Function to write the first div element to body.html
-def write_first_div_to_file(soup, filename):
-    first_div = soup.find('div')
-    with open(filename, 'w') as file:
-        file.write(str(first_div))
-
-# Function to dump the second nav element to an HTML file
-def dump_second_nav_to_file(soup, filename):
-    nav_elements = soup.find_all('nav')
-    if len(nav_elements) >= 2:
-        second_nav = nav_elements[1]
-        with open(filename, 'w') as file:
-            file.write(str(second_nav))
-    else:
-        raise Exception("Second nav element not found.")
-
-# Main execution
-if __name__ == "__main__":
-    url = "https://polygon.io/docs/stocks/getting-started"
-    soup = fetch_and_parse_document(url)
-    write_first_div_to_file(soup, 'body.html')
-    dump_second_nav_to_file(soup, 'sidebar.html')
+# 6.) For each anchor, find the corresponding div element and write it to a file called {endponit_name}_endpoint.html
