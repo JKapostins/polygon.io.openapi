@@ -48,12 +48,24 @@ def find_anchors_and_corresponding_divs():
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
     for anchor in anchors:
-        endpoint_name = anchor.get('name', '')
+        h2 = anchor.find('h2')
+        endpoint_name = h2.text if h2 else None
         if endpoint_name:
-            div = soup.find('div', {'id': endpoint_name})
-            if div:
+            endpoint_element = anchor.find_parent('div')
+            while True:
+                # Find the parent <div> element
+                endpoint_element = endpoint_element.find_parent('div')
+
+                # If the parent <div> has no class attribute, break the loop
+                if endpoint_element is None or not endpoint_element.has_attr('class'):
+                    break
+            if endpoint_element:
                 with open(f'{endpoint_name}_endpoint.html', 'w') as file:
-                    file.write(str(div))
+                    file.write(str(endpoint_element))
+                
+                #AIDER_TODO: Convert the endpoint_element to markdown and save it to a file called {endpoint_name}_endpoint.md
+                
+                
 
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
