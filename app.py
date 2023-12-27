@@ -14,10 +14,8 @@
 # 5.) Find all the anchors in the body.html
 
 # 6.) For each anchor, find the corresponding div element and write it to a file called {endponit_name}_endpoint.htmlimport requests
-import markdownify
 # Missing import for requests added
 import requests
-import markdownify
 from bs4 import BeautifulSoup
 
 def parse_html_document(url):
@@ -45,7 +43,7 @@ def extract_and_save_main_content(soup):
         with open('body.html', 'w') as file:
             file.write(str(div))
 
-def find_anchors_and_corresponding_divs_and_convert_to_markdown():
+def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
@@ -62,15 +60,10 @@ def find_anchors_and_corresponding_divs_and_convert_to_markdown():
                 if endpoint_element is None or not endpoint_element.has_attr('class'):
                     break
             if endpoint_element:
-                html_content = str(endpoint_element)
                 with open(f'{endpoint_name}_endpoint.html', 'w') as file:
-                    file.write(html_content)
-                markdown_content = markdownify.markdownify(html_content, heading_style="ATX")
-                with open(f'{endpoint_name}_endpoint.md', 'w') as file:
-                    file.write(markdown_content)
-
+                    file.write(str(endpoint_element))
                 
-                #AIDER_TODO: Convert the endpoint_element to markdown and save it to a file called {endpoint_name}_endpoint.md
+                #TODO: Convert the endpoint_element to markdown and save it to a file called {endpoint_name}_endpoint.md
                 
                 
 
@@ -80,4 +73,4 @@ if __name__ == '__main__':
     remove_first_nav_element(soup)
     extract_and_save_main_nav(soup)
     extract_and_save_main_content(soup)
-    find_anchors_and_corresponding_divs_and_convert_to_markdown()
+    find_anchors_and_corresponding_divs()
