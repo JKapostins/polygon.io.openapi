@@ -22,11 +22,11 @@ def convert_nav_to_markdown(nav_element):
     markdown = ""
     for item in nav_element.find_all(['a', 'ul', 'li']):
         if item.name == 'a':
-            markdown += f"### [{item.text.strip()}]({item['href']})\n"
+            markdown += f"- [{item.text.strip()}]({item['href']})\n"
         elif item.name == 'ul':
-            markdown += "\n"
+            markdown += ""
         elif item.name == 'li':
-            markdown += "    "  # Indentation for hierarchy
+            markdown += ""  # No additional indentation for hierarchy
     return markdown
 
 def save_markdown_to_file(markdown, filename):
