@@ -122,6 +122,18 @@ def find_anchors_and_corresponding_divs():
                     file.write(heading_markdown + parameters_markdown)
 
 
+def endpoint_details(element):
+    """Extract and format the endpoint details from the given HTML element."""
+    details_md = "\n### Endpoint\n\n"
+    method_element = element.find('span', class_='base__RequestMethod-sc-127j6tq-1')
+    url_element = element.find('div', class_='Text__StyledText-sc-6aor3p-0')
+    if method_element and url_element:
+        method = method_element.get_text().strip().upper()
+        url = url_element.get_text().strip()
+        details_md += f"- Method: `{method}`\n"
+        details_md += f"- Url: `{url}`\n\n"
+    return details_md
+
 # TODO: Create a generic function called endpointDetails that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
 # ELEMENT
 #<div class="base__ScrollableX-sc-127j6tq-0 dFRCxS">
