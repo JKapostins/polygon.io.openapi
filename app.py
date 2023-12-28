@@ -36,6 +36,7 @@ def remove_first_nav_element(soup):
 def extract_and_save_main_nav(soup):
     nav = soup.find('nav')
     if nav:
+        os.makedirs('output/html', exist_ok=True)
         with open('output/html/sidebar.html', 'w') as file:
             file.write(str(nav))
         nav.decompose()
