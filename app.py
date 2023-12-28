@@ -120,6 +120,7 @@ def find_anchors_and_corresponding_divs():
                 markdown += endpoint_details(endpoint_element)
                 markdown += endpoint_description(endpoint_element)
                 markdown += endpoint_parameters(endpoint_element)
+                markdown += "### Response"
                 markdown += endpoint_response_attributes(endpoint_element)
                 markdown += endpoint_response_object(endpoint_element)
                 markdown = markdown.replace('‘', '`').replace('’', '`')
@@ -127,6 +128,22 @@ def find_anchors_and_corresponding_divs():
                     file.write(markdown)
 
 
+# TODO: It appears there can be multiple url's for a given endpoint (ex delayed vs realtime). in the case where there are multiple use a bullet list. See EXAMPLE below.
+# EXAMPLE:
+# <div class="base__ScrollableX-sc-127j6tq-0 dFRCxS">
+#     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 dsgUMc"
+#         spacing="0"><span
+#             class="Chip-sc-1pr7fdu-0 base__RequestMethod-sc-127j6tq-1 cBmwnx cyKnyn">ws</span>
+#         <div class="Text__StyledText-sc-6aor3p-0 iqngUc" color="inherit" size="2">
+#             <div><span class="StyledSpacing-sc-wahrw5-0 fUSYAk"><label
+#                         class="Label__StyledLabel-sc-4bqfys-0 fKbvsk">Delayed<!-- -->:</label></span>wss://delayed.polygon.io/stocks
+#             </div>
+#             <div><span class="StyledSpacing-sc-wahrw5-0 fUSYAk"><label
+#                         class="Label__StyledLabel-sc-4bqfys-0 fKbvsk">Real-time<!-- -->:</label></span>wss://socket.polygon.io/stocks
+#             </div>
+#         </div>
+#     </div>
+# </div>
 def endpoint_details(element):
     """Extract and format the endpoint details from the given HTML element."""
     details_md = "\n### Endpoint\n\n"
@@ -152,7 +169,7 @@ def endpoint_description(element):
 
 def endpoint_response_attributes(element):
     """Extract and format the response attributes from the given HTML element."""
-    attributes_md = "\n### Response Attributes\n\n"
+    attributes_md = "\n#### Attributes\n\n"
     attributes_md += "<span style='color: red'>*</span> indicates the attribute is gaurenteed to be returned, otherwise the attribtue may not be returned so ensure your parser can handle these cases.\n\n"
     attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0')
     for attr_div in attribute_divs:
@@ -191,52 +208,9 @@ def endpoint_response_attributes(element):
 
 
 
-# TODO: Create a gneric function called endpointResponseObject that uses the classes of the ELEMENT using the CONSIDERATIONS.
-# CONSIDERATIONS
-# -This should be a code block in json format. You should pretty print the json.
-# ELEMENT
-# <div class="GridItem__StyledGridItem-sc-1xj2soh-0 jHuWkP">
-# <div class="StyledSpacing-sc-wahrw5-0 bERlWl">
-#     <div class="Text__StyledText-sc-6aor3p-0 iGHfaJ SubsectionLabel__StyledLabel-sc-ynvayg-0 kgOCfx"
-#         color="secondary" size="3">Response Object</div>
-#     <pre class="CodeBlock__StyledHighlighter-sc-14zdm7l-0 dEqsNg"
-#         style="display:block;overflow-x:auto;padding:0.5em;color:#383a42;background:#fafafa"><code class="language-json" style="white-space:pre"><span>{
-# </span><span>  </span><span style="color:#986801">"adjusted"</span><span>: </span><span style="color:#0184bb">true</span><span>,
-# </span><span>  </span><span style="color:#986801">"next_url"</span><span>: </span><span style="color:#50a14f">"https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/1578114000000/2020-01-10?cursor=bGltaXQ9MiZzb3J0PWFzYw"</span><span>,
-# </span><span>  </span><span style="color:#986801">"queryCount"</span><span>: </span><span style="color:#986801">2</span><span>,
-# </span><span>  </span><span style="color:#986801">"request_id"</span><span>: </span><span style="color:#50a14f">"6a7e466379af0a71039d60cc78e72282"</span><span>,
-# </span><span>  </span><span style="color:#986801">"results"</span><span>: [
-# </span>    {
-# <span>      </span><span style="color:#986801">"c"</span><span>: </span><span style="color:#986801">75.0875</span><span>,
-# </span><span>      </span><span style="color:#986801">"h"</span><span>: </span><span style="color:#986801">75.15</span><span>,
-# </span><span>      </span><span style="color:#986801">"l"</span><span>: </span><span style="color:#986801">73.7975</span><span>,
-# </span><span>      </span><span style="color:#986801">"n"</span><span>: </span><span style="color:#986801">1</span><span>,
-# </span><span>      </span><span style="color:#986801">"o"</span><span>: </span><span style="color:#986801">74.06</span><span>,
-# </span><span>      </span><span style="color:#986801">"t"</span><span>: </span><span style="color:#986801">1577941200000</span><span>,
-# </span><span>      </span><span style="color:#986801">"v"</span><span>: </span><span style="color:#986801">135647456</span><span>,
-# </span><span>      </span><span style="color:#986801">"vw"</span><span>: </span><span style="color:#986801">74.6099</span><span>
-# </span>    },
-# <!-- -->    {
-# <span>      </span><span style="color:#986801">"c"</span><span>: </span><span style="color:#986801">74.3575</span><span>,
-# </span><span>      </span><span style="color:#986801">"h"</span><span>: </span><span style="color:#986801">75.145</span><span>,
-# </span><span>      </span><span style="color:#986801">"l"</span><span>: </span><span style="color:#986801">74.125</span><span>,
-# </span><span>      </span><span style="color:#986801">"n"</span><span>: </span><span style="color:#986801">1</span><span>,
-# </span><span>      </span><span style="color:#986801">"o"</span><span>: </span><span style="color:#986801">74.2875</span><span>,
-# </span><span>      </span><span style="color:#986801">"t"</span><span>: </span><span style="color:#986801">1578027600000</span><span>,
-# </span><span>      </span><span style="color:#986801">"v"</span><span>: </span><span style="color:#986801">146535512</span><span>,
-# </span><span>      </span><span style="color:#986801">"vw"</span><span>: </span><span style="color:#986801">74.7026</span><span>
-# </span>    }
-# <!-- -->  ],
-# <span>  </span><span style="color:#986801">"resultsCount"</span><span>: </span><span style="color:#986801">2</span><span>,
-# </span><span>  </span><span style="color:#986801">"status"</span><span>: </span><span style="color:#50a14f">"OK"</span><span>,
-# </span><span>  </span><span style="color:#986801">"ticker"</span><span>: </span><span style="color:#50a14f">"AAPL"</span><span>
-# </span>}</code></pre>
-#             </div>
-#         </div>
-
 def endpoint_response_object(element):
     """Extract and format the response object from the given HTML element."""
-    response_object_md = "\n### Response Object\n\n```json\n"
+    response_object_md = "\n#### Example Response\n\n```json\n"
     pre = element.find('pre')
     if pre:
         response_object_md += pre.get_text().strip() + "\n"
