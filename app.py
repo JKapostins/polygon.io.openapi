@@ -20,7 +20,6 @@ import re
 import os
 from markdownify import markdownify as md
 from bs4 import BeautifulSoup
-import re
 
 def parse_html_document(url):
     response = requests.get(url)
