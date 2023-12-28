@@ -153,6 +153,7 @@ def endpoint_response_attributes(element):
     """Extract and format the response attributes from the given HTML element."""
     attributes_md = "\n### Response Attributes\n\n"
     attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0')
+    existing_attributes = set()
     for attr_div in attribute_divs:
         name_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
         type_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 eelqYu')
@@ -165,6 +166,7 @@ def endpoint_response_attributes(element):
             attr_type = type_span.get_text().strip()
             description = description_p.get_text().strip()
             
+
             if attr_type.lower() == 'array':
                 # Handle nested structure for array type
                 nested_attrs = attr_div.find_next_sibling('div')
@@ -182,11 +184,16 @@ def endpoint_response_attributes(element):
                             nested_required_text = " <span style='color: red'>*</span>" if nested_is_required else ""
                             nested_attr_type = nested_type_span.get_text().strip()
                             nested_description = nested_description_p.get_text().strip()
+                            nested_attribute = f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
+                            if nested_attribute not in existing_attributes:
+                                attributes_md += nested_attribute
+                                existing_attributes.add(nested_attribute)
                             attributes_md += f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
             else:
                 attribute =  f"- **{name}{required_text}** ({attr_type}): {description}\n"
-                #TODO: Check to see if attribute already exists in attribute.md before adding it.
-                attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
+                if attribute not in existing_attributes:
+                    attributes_md += attribute
+                    existing_attributes.add(attribute)
     return attributes_md
 
 
