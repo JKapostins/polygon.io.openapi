@@ -86,7 +86,9 @@ def endpoint_parameters(element):
     return parameters_md
 def sanitize_filename(name):
     """Sanitize the filename to remove special characters."""
-    return re.sub(r'[^\w\s-]', '_', name)
+    sanitized_name = re.sub(r'[^\w\s-]', '_', name)
+    sanitized_name = re.sub(r'\s+', '_', sanitized_name)
+    return sanitized_name.lower()
 
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
@@ -105,11 +107,11 @@ def find_anchors_and_corresponding_divs():
                 if endpoint_element is None or not endpoint_element.has_attr('class'):
                     break
             if endpoint_element:
-                with open(f'{endpoint_name}_endpoint.html', 'w') as file:
+                with open(f'output/html/{endpoint_name}_endpoint.html', 'w') as file:
                     file.write(str(endpoint_element))
                 heading_markdown = endpoint_heading(anchor)
                 parameters_markdown = endpoint_parameters(endpoint_element)
-                with open(f'{endpoint_name}_endpoint.md', 'w') as file:
+                with open(f'output/markdown/{endpoint_name}_endpoint.md', 'w') as file:
                     file.write(heading_markdown + parameters_markdown)
 
 
