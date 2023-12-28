@@ -68,7 +68,12 @@ def endpoint_parameters(element):
             required_text = " (required)" if is_required else ""
             description_div = param_div.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')
             param_desc = description_div.get_text().strip() if description_div else ''
-            parameters_md += f"- **{param_name}{required_text}** - {param_desc}\n"
+            param_options = param_div.find('menu')
+            if param_options:
+                options_md = 'Options: ' + ', '.join([li.get_text().strip() for li in param_options.find_all('li')])
+                parameters_md += f"- **{param_name}{required_text}**: {param_desc} ({options_md})\n"
+            else:
+                parameters_md += f"- **{param_name}{required_text}**: {param_desc}\n"
     return parameters_md
 
 def find_anchors_and_corresponding_divs():
