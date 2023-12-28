@@ -57,7 +57,7 @@ def endpoint_heading(element):
 
 def endpoint_parameters(element):
     """Extract and format the parameters from the given HTML element."""
-    parameters_md = "\n### Parameters\n\n"
+    parameters_md = "\n### Parameters\n\n<span style='color: red'>*</span> indicates a required parameter.\n\n"
     param_divs = element.find_all('div', class_='Parameters__MaxWidth-sc-ize944-0')
     for param_div in param_divs:
         label = param_div.find('label')
@@ -65,15 +65,14 @@ def endpoint_parameters(element):
             param_name = ' '.join(label.stripped_strings).strip()
             is_required = '*' in param_name
             param_name = param_name.replace('*', '').strip()
-            required_text = " (required)" if is_required else ""
+            required_text = " <span style='color: red'>*</span>" if is_required else ""
             description_div = param_div.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')
             param_desc = description_div.get_text().strip() if description_div else ''
+            parameters_md += f"#### {param_name}{required_text}\n{param_desc}\n\n"
             param_options = param_div.find('menu')
             if param_options:
-                options_md = 'Options: ' + ', '.join([li.get_text().strip() for li in param_options.find_all('li')])
-                parameters_md += f"- **{param_name}{required_text}**: {param_desc} ({options_md})\n"
-            else:
-                parameters_md += f"- **{param_name}{required_text}**: {param_desc}\n"
+                options_md = "Options:\n" + '\n'.join([f"- `{li.get_text().strip()}`" for li in param_options.find_all('li')])
+                parameters_md += options_md + "\n\n"
     return parameters_md
 
 def find_anchors_and_corresponding_divs():
