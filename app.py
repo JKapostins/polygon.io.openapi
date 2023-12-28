@@ -60,7 +60,7 @@ def endpoint_heading(element):
 
 def endpoint_parameters(element):
     """Extract and format the parameters from the given HTML element."""
-    parameters_md = "\n### Parameters\n\n<span style='color: red'>*</span> indicates a required parameter.\n\n"
+    parameters_md = "\n#### Parameters\n\n<span style='color: red'>*</span> indicates a required parameter.\n\n"
     param_divs = element.find_all('div', class_='Parameters__MaxWidth-sc-ize944-0')
     for param_div in param_divs:
         label = param_div.find('label')
@@ -119,10 +119,11 @@ def find_anchors_and_corresponding_divs():
                 markdown = endpoint_heading(anchor)
                 markdown += endpoint_details(endpoint_element)
                 markdown += endpoint_description(endpoint_element)
+                markdown += "### Request\n\n"
                 markdown += endpoint_parameters(endpoint_element)
-                markdown += "### Response"
-                markdown += endpoint_response_attributes(endpoint_element)
                 markdown += example_endpoint_request(endpoint_element)
+                markdown += "### Response\n\n"
+                markdown += endpoint_response_attributes(endpoint_element)                
                 markdown += endpoint_response_object(endpoint_element)
                 markdown = markdown.replace('‘', '`').replace('’', '`')
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
