@@ -152,7 +152,7 @@ def endpoint_description(element):
 def endpoint_response_attributes(element):
     """Extract and format the response attributes from the given HTML element."""
     attributes_md = "\n### Response Attributes\n\n"
-    attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0')
+    attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0', recursive=False)
     for attr_div in attribute_divs:
         name_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
         type_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 eelqYu')
@@ -164,9 +164,12 @@ def endpoint_response_attributes(element):
             required_text = " <span style='color: red'>*</span>" if is_required else ""
             attr_type = type_span.get_text().strip()
             description = description_p.get_text().strip()
-            attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
+            if attr_type.lower() != 'array':
+                attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
             if attr_type.lower() == 'array':
                 # Handle nested structure for array type
+                attributes_md += f"- **{name}{required_text}** ({attr_type}):\n"
+                attributes_md += "  - **Attributes**:\n"
                 nested_attrs = attr_div.find_next_sibling('div')
                 if nested_attrs:
                     attributes_md += "  - **Attributes**:\n"
