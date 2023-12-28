@@ -46,17 +46,6 @@ def extract_and_save_main_content(soup):
             file.write(str(div))
 
 
-def extract_points_of_interest(element):
-    """Extract points of interest from the given element and format them."""
-    points_of_interest = []
-    if 'ScrollTargetLink__Anchor-sc-yy6ew6-0' in element.get('class', []):
-        # Extract the endpoint name and URL
-        endpoint_name = element.find('h2').get_text().strip()
-        endpoint_url = element.get('href').strip()
-        # Format the points of interest
-        points_of_interest.append(f"## <a href='{endpoint_url}'> {endpoint_name} </a>\n\n")
-    return ''.join(points_of_interest)
-
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
@@ -76,12 +65,10 @@ def find_anchors_and_corresponding_divs():
             if endpoint_element:
                 with open(f'{endpoint_name}_endpoint.html', 'w') as file:
                     file.write(str(endpoint_element))
-                markdown_content = extract_points_of_interest(anchor)
-                with open(f'{endpoint_name}_endpoint.md', 'w') as file:
-                    file.write(markdown_content)
+                #TODO: call endpoint heading here and pass in the endpoint_element
 
 
-# TODO: Create a generic function that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
+# TODO: Create a generic function called endpointHeading that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
 # ELEMENT
 #     <a
 #     class="ScrollTargetLink__Anchor-sc-yy6ew6-0 iCcuRo StyledSpacing-sc-wahrw5-0 dsgUMc"
