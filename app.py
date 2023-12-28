@@ -46,6 +46,15 @@ def extract_and_save_main_content(soup):
             file.write(str(div))
 
 
+def endpoint_heading(element):
+    """Extract and format the endpoint heading from the given HTML element."""
+    classes = element.get('class', [])
+    if 'ScrollTargetLink__Anchor-sc-yy6ew6-0' in classes:
+        endpoint_name = element.find('h2').get_text().strip()
+        endpoint_url = element.get('href').strip()
+        return f"## <a href='{endpoint_url}'> {endpoint_name} </a>\n\n"
+    return ""
+
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
@@ -65,7 +74,9 @@ def find_anchors_and_corresponding_divs():
             if endpoint_element:
                 with open(f'{endpoint_name}_endpoint.html', 'w') as file:
                     file.write(str(endpoint_element))
-                #TODO: call endpoint heading here and pass in the endpoint_element
+                heading_markdown = endpoint_heading(anchor)
+                with open(f'{endpoint_name}_endpoint.md', 'w') as file:
+                    file.write(heading_markdown)
 
 
 # TODO: Create a generic function called endpointHeading that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
