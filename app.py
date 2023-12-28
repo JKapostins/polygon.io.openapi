@@ -68,7 +68,7 @@ def endpoint_parameters(element):
             param_name = ' '.join(label.stripped_strings).strip()
             is_required = '*' in param_name
             param_name = param_name.replace('*', '').strip()
-            required_text = "<span style='color: red'>*</span>" if is_required else ""
+            required_text = " <span style='color: red'>*</span>" if is_required else ""
             description_div = param_div.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')            
             param_desc = ""
             if description_div:
@@ -91,7 +91,6 @@ def sanitize_filename(name):
     sanitized_name = re.sub(r'[^\w\s-]', '_', name)
     sanitized_name = re.sub(r'\s+', '_', sanitized_name)
     sanitized_name = sanitized_name.lower()
-    sanitized_name = re.sub(r'_{2,}', '_', sanitized_name) + '_endpoint'  # Append '_endpoint' and replace two or more underscores with one
     sanitized_name = re.sub(r'_{2,}', '_', sanitized_name)  # Ensure only one underscore before '_endpoint'
     return sanitized_name
 
@@ -121,6 +120,25 @@ def find_anchors_and_corresponding_divs():
                 parameters_markdown = endpoint_parameters(endpoint_element)
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(heading_markdown + parameters_markdown)
+
+
+# TODO: Create a generic function called endpointDetails that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
+# ELEMENT
+#<div class="base__ScrollableX-sc-127j6tq-0 dFRCxS">
+#    <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 dsgUMc"
+#        spacing="0"><span
+#            class="Chip-sc-1pr7fdu-0 base__RequestMethod-sc-127j6tq-1 lcWwdt cyKnyn">get</span>
+#        <div class="Text__StyledText-sc-6aor3p-0 ieZVsm" color="secondary" size="3">
+#            /v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}</div>
+#    </div>
+#</div>
+# POINTS_OF_INTEREST
+# -get
+# -/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}</div>
+# FORMAT
+# ### Endpoint
+# - Method: `Get`
+# - Url: `/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}`
 
 
 # Create a generic function called endpointHeading that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
