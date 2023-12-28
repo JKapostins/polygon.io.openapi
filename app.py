@@ -55,6 +55,22 @@ def endpoint_heading(element):
         return f"## <a href='{endpoint_url}'> {endpoint_name} </a>\n\n"
     return ""
 
+def endpoint_parameters(element):
+    """Extract and format the parameters from the given HTML element."""
+    parameters_md = "\n### Parameters\n\n"
+    param_divs = element.find_all('div', class_='Parameters__MaxWidth-sc-ize944-0')
+    for param_div in param_divs:
+        label = param_div.find('label')
+        if label:
+            param_name = ' '.join(label.stripped_strings).strip()
+            is_required = '*' in param_name
+            param_name = param_name.replace('*', '').strip()
+            required_text = " (required)" if is_required else ""
+            description_div = param_div.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')
+            param_desc = description_div.get_text().strip() if description_div else ''
+            parameters_md += f"- **{param_name}{required_text}** - {param_desc}\n"
+    return parameters_md
+
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
@@ -75,8 +91,9 @@ def find_anchors_and_corresponding_divs():
                 with open(f'{endpoint_name}_endpoint.html', 'w') as file:
                     file.write(str(endpoint_element))
                 heading_markdown = endpoint_heading(anchor)
+                parameters_markdown = endpoint_parameters(endpoint_element)
                 with open(f'{endpoint_name}_endpoint.md', 'w') as file:
-                    file.write(heading_markdown)
+                    file.write(heading_markdown + parameters_markdown)
 
 
 # Create a generic function called endpointHeading that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
