@@ -148,6 +148,42 @@ def endpoint_description(element):
     return description_md.replace('<br />', '\n').replace('<br>', '\n')
 
 
+def endpoint_response_attributes(element):
+    """Extract and format the response attributes from the given HTML element."""
+    attributes_md = "\n### Response Attributes\n\n"
+    attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0')
+    for attr_div in attribute_divs:
+        name_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
+        type_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 eelqYu')
+        description_p = attr_div.find('div', class_='ResponseAttributes__Description-sc-hzb6em-1')
+        if name_span and type_span and description_p:
+            name = name_span.get_text().strip()
+            is_required = '*' in name
+            name = name.replace('*', '').strip()
+            required_text = " <span style='color: red'>*</span>" if is_required else ""
+            attr_type = type_span.get_text().strip()
+            description = description_p.get_text().strip()
+            attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
+            if attr_type.lower() == 'array':
+                # Handle nested structure for array type
+                nested_attrs = attr_div.find_next_sibling('div')
+                if nested_attrs:
+                    attributes_md += "  - **Attributes**:\n"
+                    nested_attribute_divs = nested_attrs.find_all('div', recursive=False)
+                    for nested_attr_div in nested_attribute_divs:
+                        nested_name_span = nested_attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
+                        nested_type_span = nested_attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 eelqYu')
+                        nested_description_p = nested_attr_div.find('div', class_='ResponseAttributes__Description-sc-hzb6em-1')
+                        if nested_name_span and nested_type_span and nested_description_p:
+                            nested_name = nested_name_span.get_text().strip()
+                            nested_is_required = '*' in nested_name
+                            nested_name = nested_name.replace('*', '').strip()
+                            nested_required_text = " <span style='color: red'>*</span>" if nested_is_required else ""
+                            nested_attr_type = nested_type_span.get_text().strip()
+                            nested_description = nested_description_p.get_text().strip()
+                            attributes_md += f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
+    return attributes_md
+
 # TODO: Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
 # CONSIDERATIONS
 # -The heading should always be named Response Attributes
