@@ -89,7 +89,8 @@ def sanitize_filename(name):
     sanitized_name = re.sub(r'[^\w\s-]', '_', name)
     sanitized_name = re.sub(r'\s+', '_', sanitized_name)
     sanitized_name = sanitized_name.lower()
-    sanitized_name = re.sub(r'_{2,}', '_', sanitized_name)  # Replace two or more underscores with one
+    sanitized_name = re.sub(r'_{2,}', '_', sanitized_name) + '_endpoint'  # Append '_endpoint' and replace two or more underscores with one
+    sanitized_name = re.sub(r'_{2,}', '_', sanitized_name)  # Ensure only one underscore before '_endpoint'
     return sanitized_name
 
 def find_anchors_and_corresponding_divs():
