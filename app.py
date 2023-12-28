@@ -44,6 +44,7 @@ def extract_and_save_main_nav(soup):
 def extract_and_save_main_content(soup):
     div = soup.find('div')
     if div:
+        os.makedirs('output/html', exist_ok=True)
         with open('output/html/body.html', 'w') as file:
             file.write(str(div))
 
@@ -113,11 +114,12 @@ def find_anchors_and_corresponding_divs():
                 if endpoint_element is None or not endpoint_element.has_attr('class'):
                     break
             if endpoint_element:
-                with open(f'output/html/{endpoint_name}_endpoint.html', 'w') as file:
+                endpoint_file_name = sanitize_filename(f"{endpoint_name}_endpoint")
+                with open(f'output/html/{endpoint_file_name}.html', 'w') as file:
                     file.write(str(endpoint_element))
                 heading_markdown = endpoint_heading(anchor)
                 parameters_markdown = endpoint_parameters(endpoint_element)
-                with open(f'output/markdown/{endpoint_name}_endpoint.md', 'w') as file:
+                with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(heading_markdown + parameters_markdown)
 
 
