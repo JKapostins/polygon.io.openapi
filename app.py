@@ -164,10 +164,9 @@ def endpoint_response_attributes(element):
             required_text = " <span style='color: red'>*</span>" if is_required else ""
             attr_type = type_span.get_text().strip()
             description = description_p.get_text().strip()
-            if attr_type.lower() == 'array' and 'results' in name.lower():
+            
+            if attr_type.lower() == 'array':
                 # Handle nested structure for array type
-                attributes_md += f"- **{name}{required_text}** ({attr_type}):\n"
-                attributes_md += "  - **Attributes**:\n"
                 nested_attrs = attr_div.find_next_sibling('div')
                 if nested_attrs:
                     attributes_md += "  - **Attributes**:\n"
@@ -184,62 +183,12 @@ def endpoint_response_attributes(element):
                             nested_attr_type = nested_type_span.get_text().strip()
                             nested_description = nested_description_p.get_text().strip()
                             attributes_md += f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
-            elif 'results' not in name.lower():
+            else:
+                attribute =  f"- **{name}{required_text}** ({attr_type}): {description}\n"
+                #TODO: Check to see if attribute already exists in attribute.md before adding it.
                 attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
     return attributes_md
 
-# TODO: This OUTPUT is what endpoint_response_attributes generates, but i'm looking for this EXPECTED_OUTPUT. Notice the 'results' array and the c, h, l, n, o, otc, t, v, vw attributes are all nested under the results array. which was good, but they were also listed outside the array which is bad.
-
-#OUTPUT
-### Response Attributes
-
-# - **ticker <span style='color: red'>*</span>** (string): The exchange symbol that this item is traded under.
-# - **adjusted <span style='color: red'>*</span>** (boolean): Whether or not this response was adjusted for splits.
-# - **queryCount <span style='color: red'>*</span>** (integer): The number of aggregates (minute or day) used to generate the response.
-# - **request_id <span style='color: red'>*</span>** (string): A request id assigned by the server.
-# - **resultsCount <span style='color: red'>*</span>** (integer): The total number of results for this request.
-# - **status <span style='color: red'>*</span>** (string): The status of this request's response.
-# - **results** (array): 
-#   - **Attributes**:
-#     - **c <span style='color: red'>*</span>** (number): The close price for the symbol in the given time period.
-#     - **h <span style='color: red'>*</span>** (number): The highest price for the symbol in the given time period.
-#     - **l <span style='color: red'>*</span>** (number): The lowest price for the symbol in the given time period.
-#     - **n** (integer): The number of transactions in the aggregate window.
-#     - **o <span style='color: red'>*</span>** (number): The open price for the symbol in the given time period.
-#     - **otc** (boolean): Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
-#     - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
-#     - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
-#     - **vw** (number): The volume weighted average price.
-# - **c <span style='color: red'>*</span>** (number): The close price for the symbol in the given time period.
-# - **h <span style='color: red'>*</span>** (number): The highest price for the symbol in the given time period.
-# - **l <span style='color: red'>*</span>** (number): The lowest price for the symbol in the given time period.
-# - **n** (integer): The number of transactions in the aggregate window.
-# - **o <span style='color: red'>*</span>** (number): The open price for the symbol in the given time period.
-# - **otc** (boolean): Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
-# - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
-# - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
-# - **vw** (number): The volume weighted average price.
-# - **next_url** (string): If present, this value can be used to fetch the next page of data.
-#
-#EXPECTED_OUTPUT
-# - **ticker <span style='color: red'>*</span>** (string): The exchange symbol that this item is traded under.
-# - **adjusted <span style='color: red'>*</span>** (boolean): Whether or not this response was adjusted for splits.
-# - **queryCount <span style='color: red'>*</span>** (integer): The number of aggregates (minute or day) used to generate the response.
-# - **request_id <span style='color: red'>*</span>** (string): A request id assigned by the server.
-# - **resultsCount <span style='color: red'>*</span>** (integer): The total number of results for this request.
-# - **status <span style='color: red'>*</span>** (string): The status of this request's response.
-# - **results** (array): 
-#   - **c <span style='color: red'>*</span>** (number): The close price for the symbol in the given time period.
-#   - **h <span style='color: red'>*</span>** (number): The highest price for the symbol in the given time period.
-#   - **l <span style='color: red'>*</span>** (number): The lowest price for the symbol in the given time period.
-#   - **n** (integer): The number of transactions in the aggregate window.
-#   - **o <span style='color: red'>*</span>** (number): The open price for the symbol in the given time period.
-#   - **otc** (boolean): Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
-#   - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
-#   - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
-#   - **vw** (number): The volume weighted average price.
-
-# - **next_url** (string): If present, this value can be used to fetch the next page of data.
 
 # Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
 # CONSIDERATIONS
