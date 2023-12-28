@@ -116,10 +116,11 @@ def find_anchors_and_corresponding_divs():
                 endpoint_file_name = sanitize_filename(f"{endpoint_name}_endpoint")
                 with open(f'output/html/{endpoint_file_name}.html', 'w') as file:
                     file.write(str(endpoint_element))
-                heading_markdown = endpoint_heading(anchor)
-                parameters_markdown = endpoint_parameters(endpoint_element)
+                markdown = endpoint_heading(anchor)
+                markdown += endpoint_details(endpoint_element)
+                markdown += endpoint_parameters(endpoint_element)
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
-                    file.write(heading_markdown + parameters_markdown)
+                    file.write(markdown)
 
 
 def endpoint_details(element):
@@ -134,7 +135,29 @@ def endpoint_details(element):
         details_md += f"- Url: `{url}`\n\n"
     return details_md
 
-# TODO: Create a generic function called endpointDetails that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
+
+# TODO: Create a generic function called endpointDescription that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT. Be sure to run this replace function:
+# ELEMENT
+# <div class="Text__StyledText-sc-6aor3p-0 jugoJw StyledSpacing-sc-wahrw5-0 hKvqOb" color="inherit"
+#     size="4">
+#     <p>Get aggregate bars for a stock over a given date range in custom time window sizes.
+#         <br />
+#         <br />
+#         For example, if timespan = `minute` and multiplier = `5` then 5-minute bars will be returned.
+#     </p>
+# </div>
+#</div>
+# POINTS_OF_INTEREST
+# -Get aggregate bars for a stock over a given date range in custom time window sizes. 
+# -For example, if timespan = `minute` and multiplier = `5` then 5-minute bars will be returned.
+# FORMAT
+# ### Description
+# Get aggregate bars for a stock over a given date range in custom time window sizes.
+# For example, if timespan = `minute` and multiplier = `5` then 5-minute bars will be returned.
+
+
+
+# Create a generic function called endpointDetails that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
 # ELEMENT
 #<div class="base__ScrollableX-sc-127j6tq-0 dFRCxS">
 #    <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 dsgUMc"
