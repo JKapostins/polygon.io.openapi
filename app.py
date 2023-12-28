@@ -36,14 +36,14 @@ def remove_first_nav_element(soup):
 def extract_and_save_main_nav(soup):
     nav = soup.find('nav')
     if nav:
-        with open('sidebar.html', 'w') as file:
+        with open('output/html/sidebar.html', 'w') as file:
             file.write(str(nav))
         nav.decompose()
 
 def extract_and_save_main_content(soup):
     div = soup.find('div')
     if div:
-        with open('body.html', 'w') as file:
+        with open('output/html/body.html', 'w') as file:
             file.write(str(div))
 
 
