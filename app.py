@@ -118,7 +118,9 @@ def find_anchors_and_corresponding_divs():
                     file.write(str(endpoint_element))
                 markdown = endpoint_heading(anchor)
                 markdown += endpoint_details(endpoint_element)
+                markdown += endpoint_description(endpoint_element)
                 markdown += endpoint_parameters(endpoint_element)
+                markdown = markdown.replace('‘', '`').replace('’', '`')
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
 
@@ -145,416 +147,290 @@ def endpoint_description(element):
             description_md += f"{desc_element.get_text().strip()}\n\n"
     return description_md.replace('<br />', '\n').replace('<br>', '\n')
 
-# TODO: Create a generic function called endpointDescription that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT. Be sure to run this replace function:
-# ELEMENT
-# <div class="Text__StyledText-sc-6aor3p-0 jugoJw StyledSpacing-sc-wahrw5-0 hKvqOb" color="inherit"
-#     size="4">
-#     <p>Get aggregate bars for a stock over a given date range in custom time window sizes.
-#         <br />
-#         <br />
-#         For example, if timespan = `minute` and multiplier = `5` then 5-minute bars will be returned.
-#     </p>
-# </div>
-#</div>
-# POINTS_OF_INTEREST
-# -Get aggregate bars for a stock over a given date range in custom time window sizes. 
-# -For example, if timespan = `minute` and multiplier = `5` then 5-minute bars will be returned.
-# FORMAT
-# ### Description
-# Get aggregate bars for a stock over a given date range in custom time window sizes.
-# For example, if timespan = `minute` and multiplier = `5` then 5-minute bars will be returned.
 
-
-
-# Create a generic function called endpointDetails that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
-# ELEMENT
-#<div class="base__ScrollableX-sc-127j6tq-0 dFRCxS">
-#    <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 dsgUMc"
-#        spacing="0"><span
-#            class="Chip-sc-1pr7fdu-0 base__RequestMethod-sc-127j6tq-1 lcWwdt cyKnyn">get</span>
-#        <div class="Text__StyledText-sc-6aor3p-0 ieZVsm" color="secondary" size="3">
-#            /v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}</div>
-#    </div>
-#</div>
-# POINTS_OF_INTEREST
-# -get
-# -/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}</div>
-# FORMAT
-# ### Endpoint
-# - Method: `Get`
-# - Url: `/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}`
-
-
-# Create a generic function called endpointHeading that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT.
-# ELEMENT
-#     <a
-#     class="ScrollTargetLink__Anchor-sc-yy6ew6-0 iCcuRo StyledSpacing-sc-wahrw5-0 dsgUMc"
-#     href="https://polygon.io/docs/stocks/get_v2_aggs_ticker__stocksticker__range__multiplier___timespan___from___to"
-#     role="button" tabindex="0" type="button">
-#     <h2 class="Text__StyledText-sc-6aor3p-0 cCFnnL Typography__StyledText-sc-102sqjl-0 gHCXHz"
-#         color="primary" size="7">Aggregates (Bars)</h2>
-# </a>
-# POINTS_OF_INTEREST
-# -Aggregates (Bars)
-# -https://polygon.io/docs/stocks/get_v2_aggs_ticker__stocksticker__range__multiplier___timespan___from___to
-# FORMAT
-# ## <a href='https://polygon.io/docs/stocks/get_v2_aggs_ticker__stocksticker__range__multiplier___timespan___from___to'> Aggregates (Bars) </a>
-
-# Create a gneric function called endpointParameters that uses the classes of the ELEMENT using the CONSIDERATIONS.
+# TODO: Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
 # CONSIDERATIONS
-# -The heading should always be named Parameters
-# -Some Parameters have a * at the end indicating they are required. this can have an impact on formatting but it is important to indicate what params are required in md.
-# -Some parameters are accept fixed values usually in the form of menu items. These <li> tags should be preserved.
+# -The heading should always be named Response Attributes
+# -Some attributes have a * at the end indicating they are required. this can have an impact on formatting but it is important to indicate what params are required in md.
+# -Some attributes are an 'array' type which have a nested structure. this should be indicated in the md. See the 'results' attribute for an array is structured in the html.
+# -Be sure to include the name, type and description of each attribute.
 # ELEMENT
-# <div class="StyledSpacing-sc-wahrw5-0 jpImIW">
-# <div class="Text__StyledText-sc-6aor3p-0 eXjcsS StyledSpacing-sc-wahrw5-0 hKvqOb" color="inherit"
-#     size="5">Parameters</div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#             <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                     class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                     color="secondary" size="2"><span class="Text__StyledText-sc-6aor3p-0 jNvGLe"
-#                         color="primary" size="2">stocksTicker</span> <span
-#                         class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                         size="2">*</span></label>
-#                 <div class="Input__InputContainer-sc-c1zkxq-0 gwDeuf"><input
-#                         class="Input__StyledInput-sc-c1zkxq-1 kuOwsY"
-#                         name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_stocksTicker"
-#                         placeholder="" type="text" /></div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">ticker<span
+#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">string</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>The exchange symbol that this item is traded under.</p>
 #             </div>
 #         </div>
 #     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>Specify a case-sensitive ticker symbol. For example, AAPL represents Apple Inc.</p>
-#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
 # </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#             <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                     class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                     color="secondary" size="2"><span class="Text__StyledText-sc-6aor3p-0 jNvGLe"
-#                         color="primary" size="2">multiplier</span> <span
-#                         class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                         size="2">*</span></label>
-#                 <div class="Input__InputContainer-sc-c1zkxq-0 gwDeuf"><input
-#                         class="Input__StyledInput-sc-c1zkxq-1 kuOwsY"
-#                         name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_multiplier"
-#                         placeholder="" type="number" /></div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">adjusted<span
+#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">boolean</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>Whether or not this response was adjusted for splits.</p>
 #             </div>
 #         </div>
 #     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>The size of the timespan multiplier.</p>
-#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
 # </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">queryCount<span
+#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">integer</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>The number of aggregates (minute or day) used to generate the response.</p>
+#             </div>
+#         </div>
+#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+# </div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">request_id<span
+#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">string</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>A request id assigned by the server.</p>
+#             </div>
+#         </div>
+#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+# </div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
+#                         size="2">resultsCount<span class="Text__StyledText-sc-6aor3p-0 iBsCAz"
+#                             color="danger" size="2">*</span></span></span><span
+#                     class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary" size="2">integer</span>
+#             </div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>The total number of results for this request.</p>
+#             </div>
+#         </div>
+#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+# </div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">status<span
+#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">string</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>The status of this request's response.</p>
+#             </div>
+#         </div>
+#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+# </div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
+#                         size="2">results</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">array</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd"></div>
+#         </div>
+#     </div>
+#     <div class="StyledSpacing-sc-wahrw5-0 eJGJaX">
 #         <div>
-#             <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#                 <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                         class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                         color="secondary" for="bqcr0085zqu" size="2"><span
-#                             class="Text__StyledText-sc-6aor3p-0 jNvGLe" color="primary"
-#                             size="2">timespan</span> <span class="Text__StyledText-sc-6aor3p-0 iBsCAz"
-#                             color="danger" size="2">*</span></label><button
-#                         class="indexstyles__SelectWrapper-sc-1r27fmm-0 kjFlhD" type="button"><span
-#                             class="indexstyles__StyledSelect-sc-1r27fmm-1 bPlNsp" id="bqcr0085zqu"
-#                             name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_timespan"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ieZVsm" color="secondary"
-#                                 size="3"></span></span><i
-#                             class="indexstyles__Icon-sc-1r27fmm-5 jyRPIT fas fa-caret-down"></i></button>
-#                     <menu class="indexstyles__OptionList-sc-1r27fmm-2 cxxLoj"
-#                         style="position:absolute;left:0;top:0">
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">second</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">minute</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">hour</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">day</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">week</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">month</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">quarter</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">year</span></button></li>
-#                     </menu>
-#                 </div>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>The size of the time window.</p>
-#     </div>
-# </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#             <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                     class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                     color="secondary" size="2"><span class="Text__StyledText-sc-6aor3p-0 jNvGLe"
-#                         color="primary" size="2">from</span> <span
-#                         class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                         size="2">*</span></label>
-#                 <div class="Input__InputContainer-sc-c1zkxq-0 gwDeuf"><input
-#                         class="Input__StyledInput-sc-c1zkxq-1 kuOwsY"
-#                         name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_from"
-#                         placeholder="" type="text" /></div>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>The start of the aggregate time window. Either a date with the format YYYY-MM-DD or a
-#             millisecond timestamp.</p>
-#     </div>
-# </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#             <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                     class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                     color="secondary" size="2"><span class="Text__StyledText-sc-6aor3p-0 jNvGLe"
-#                         color="primary" size="2">to</span> <span
-#                         class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                         size="2">*</span></label>
-#                 <div class="Input__InputContainer-sc-c1zkxq-0 gwDeuf"><input
-#                         class="Input__StyledInput-sc-c1zkxq-1 kuOwsY"
-#                         name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_to"
-#                         placeholder="" type="text" /></div>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>The end of the aggregate time window. Either a date with the format YYYY-MM-DD or a
-#             millisecond timestamp.</p>
-#     </div>
-# </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div>
-#             <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#                 <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                         class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                         color="secondary" for="voq111nksyh" size="2"><span
-#                             class="Text__StyledText-sc-6aor3p-0 jNvGLe" color="primary"
-#                             size="2">adjusted</span> </label><button
-#                         class="indexstyles__SelectWrapper-sc-1r27fmm-0 kjFlhD" type="button"><span
-#                             class="indexstyles__StyledSelect-sc-1r27fmm-1 bPlNsp" id="voq111nksyh"
-#                             name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_adjusted"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ieZVsm" color="secondary"
-#                                 size="3"></span></span><i
-#                             class="indexstyles__Icon-sc-1r27fmm-5 jyRPIT fas fa-caret-down"></i></button>
-#                     <menu class="indexstyles__OptionList-sc-1r27fmm-2 cxxLoj"
-#                         style="position:absolute;left:0;top:0">
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3"></span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">true</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">false</span></button></li>
-#                     </menu>
-#                 </div>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>Whether or not the results are adjusted for splits. By default, results are adjusted.
-#             Set this to false to get results that are NOT adjusted for splits.</p>
-#     </div>
-# </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div>
-#             <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#                 <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                         class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                         color="secondary" for="5vvru47vh7g" size="2"><span
-#                             class="Text__StyledText-sc-6aor3p-0 jNvGLe" color="primary"
-#                             size="2">sort</span> </label><button
-#                         class="indexstyles__SelectWrapper-sc-1r27fmm-0 kjFlhD" type="button"><span
-#                             class="indexstyles__StyledSelect-sc-1r27fmm-1 bPlNsp" id="5vvru47vh7g"
-#                             name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_sort"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ieZVsm" color="secondary"
-#                                 size="3"></span></span><i
-#                             class="indexstyles__Icon-sc-1r27fmm-5 jyRPIT fas fa-caret-down"></i></button>
-#                     <menu class="indexstyles__OptionList-sc-1r27fmm-2 cxxLoj"
-#                         style="position:absolute;left:0;top:0">
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3"></span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">asc</span></button></li>
-#                         <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                 type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">desc</span></button></li>
-#                     </menu>
-#                 </div>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>Sort the results by timestamp.
-#             <code>asc</code> will return results in ascending order (oldest at the top),
-#             <code>desc</code> will return results in descending order (newest at the top).
-#         </p>
-#     </div>
-# </div>
-# <div class="StyledSpacing-sc-wahrw5-0 dsgUMc">
-#     <div class="Parameters__MaxWidth-sc-ize944-0 hIxfcy StyledSpacing-sc-wahrw5-0 gClFQA">
-#         <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH">
-#             <div class="AddOnLabel__Flex-sc-1xxztq9-0 gVBZRg"><label
-#                     class="Text__StyledText-sc-6aor3p-0 eXRtXK NoWrapLabel-sc-q6mxcu-0 AddOnLabel__Label-sc-1xxztq9-1 ctLntY guPIIn"
-#                     color="secondary" size="2"><span class="Text__StyledText-sc-6aor3p-0 jNvGLe"
-#                         color="primary" size="2">limit</span> </label>
-#                 <div class="Input__InputContainer-sc-c1zkxq-0 gwDeuf"><input
-#                         class="Input__StyledInput-sc-c1zkxq-1 kuOwsY"
-#                         name="/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}_limit"
-#                         placeholder="" type="number" /></div>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Parameters__Description-sc-ize944-1 RrnQG StyledSpacing-sc-wahrw5-0 dsgUMc">
-#         <p>Limits the number of base aggregates queried to create the aggregate results. Max 50000 and
-#             Default 5000.
-#             Read more about how limit is used to calculate aggregate results in our article on
-#             <a alt="Aggregate Data API Improvements" href="https://polygon.io/blog/aggs-api-updates/"
-#                 target="_blank">Aggregate Data API Improvements</a>.
-#         </p>
-#     </div>
-# </div>
-# <div class="base__QueryContainer-sc-127j6tq-3 hfXbJX">
-#     <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
-#         <div class="Container__StyledContainer-sc-83etil-0 fODFXk" spacing="0">
-#             <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ" order="0">
-#                 <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
-#                         class="Text__StyledText-sc-6aor3p-0 kjHyPJ" color="inherit" height="1.3"
-#                         size="2">https://api.polygon.io/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}?apiKey=*</span>
-#                 </div>
-#             </div>
-#             <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq" order="0"><button
-#                     class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
-#                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
-#                             class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
-#             </div>
-#         </div>
-#     </div>
-#     <div class="Container__StyledContainer-sc-83etil-0 jDgJDT" spacing="0">
-#         <div class="Container__StyledContainer-sc-83etil-0 fODFXk StyledSpacing-sc-wahrw5-0 doupJv"
-#             spacing="0">
-#             <div class="StyledSpacing-sc-wahrw5-0 djTPsc">
-#                 <div>
-#                     <div class="InputWrapper__Gutter-sc-10wrlv4-0 kwcAIH"><button
-#                             class="indexstyles__SelectWrapper-sc-1r27fmm-0 jgDKLw" type="button"><span
-#                                 class="indexstyles__StyledSelect-sc-1r27fmm-1 bPlNsp" id="w2j5ui981eg"
-#                                 value="json"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                     color="primary" size="3">JSON</span></span><i
-#                                 class="indexstyles__Icon-sc-1r27fmm-5 jyRPIT fas fa-caret-down"></i></button>
-#                         <menu class="indexstyles__OptionList-sc-1r27fmm-2 cxxLoj"
-#                             style="position:absolute;left:0;top:0">
-#                             <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                     type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                         color="primary" size="3">JSON</span></button></li>
-#                             <li class="indexstyles__StyledListItem-sc-1r27fmm-3 ccpeub"><button
-#                                     type="button"><span class="Text__StyledText-sc-6aor3p-0 ilOVUE"
-#                                         color="primary" size="3">CSV</span></button></li>
-#                         </menu>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">c<span
+#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                                     size="2">*</span></span></span><span
+#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
+#                             size="2">number</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The close price for the symbol in the given time period.</p>
 #                     </div>
 #                 </div>
-#             </div><button class="Button__StyledButton-sc-1gkx93s-0 hWyDNS"><span
-#                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
-#                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Run
-#                         Query</span></span></button>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">h<span
+#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                                     size="2">*</span></span></span><span
+#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
+#                             size="2">number</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The highest price for the symbol in the given time period.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">l<span
+#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                                     size="2">*</span></span></span><span
+#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
+#                             size="2">number</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The lowest price for the symbol in the given time period.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
+#                                 size="2">n</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                             color="secondary" size="2">integer</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The number of transactions in the aggregate window.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">o<span
+#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                                     size="2">*</span></span></span><span
+#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
+#                             size="2">number</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The open price for the symbol in the given time period.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
+#                                 size="2">otc</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                             color="secondary" size="2">boolean</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>Whether or not this aggregate is for an OTC ticker. This field will be left off
+#                             if false.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">t<span
+#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                                     size="2">*</span></span></span><span
+#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
+#                             size="2">integer</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The Unix Msec timestamp for the start of the aggregate window.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">v<span
+#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
+#                                     size="2">*</span></span></span><span
+#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
+#                             size="2">number</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The trading volume of the symbol in the given time period.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
+#         </div>
+#         <div>
+#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
+#                                 size="2">vw</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                             color="secondary" size="2">number</span></div>
+#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                         <p>The volume weighted average price.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
 #         </div>
 #     </div>
 # </div>
+# <div>
+#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
+#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
+#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
+#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
+#                         size="2">next_url</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
+#                     color="secondary" size="2">string</span></div>
+#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
+#                 <p>If present, this value can be used to fetch the next page of data.</p>
+#             </div>
+#         </div>
+#     </div>
+#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
 # </div>
 
 
-#-----------------OLD CODE-----------------#
-
-
-# def convert_to_markdown(element):
-#     """ Convert HTML elements to Markdown. """
-
-#     if element.name == 'a' and element.get('href'):
-#         return f"## <a href='{element['href']}'> {element.get_text().strip()} </a>\n\n"
-#     elif element.name == 'p':
-#         return f"{element.get_text().strip()}\n\n"
-#     elif element.name == 'pre':
-#         return f"```\n{element.get_text().strip()}\n```\n\n"
-#     elif element.name == 'div' and 'StyledSpacing-sc-wahrw5-0' in element.get('class', []) and 'jpImIW' in element.get('class', []):
-#         return handle_parameters(element)
-#     return ""
-
-# def handle_parameters(element):
-#     """ Handle the parameters section. """
-#     params_md = "\n### Parameters\n\n"
-#     # Find all parameter containers
-#     param_containers = element.find_all('div', class_='Parameters__MaxWidth-sc-ize944-0', recursive=True)
-    
-#     for container in param_containers:
-#         # Extracting parameter name from the label
-#         label = container.find('label')
-#         if label:
-#             param_name = ' '.join(label.stripped_strings).strip()
-
-#             # Check if the parameter is required (indicated by an asterisk)
-#             is_required = '*' in param_name
-#             if is_required:
-#                 param_name = param_name.replace('*', '').strip()  # Remove asterisk
-#                 required_text = " (required)"
-#             else:
-#                 required_text = ""
-
-#             # Finding the corresponding description
-#             description_container = container.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')
-#             if description_container:
-#                 param_desc = description_container.get_text().strip()
-
-
-#                 params_md += f"- **{param_name}{required_text}** - {param_desc}\n"
-
-
-#     return params_md
-
-# def html_to_markdown(html_content):
-#     """ Convert HTML content to Markdown. """
-#     soup = BeautifulSoup(html_content, 'html.parser')
-#     markdown = []
-
-#     # Start from the main container div
-#     main_container = soup.find('div', class_='Grid__Component-sc-h1tb5o-0')
-#     if not main_container:
-#         main_container = soup
-
-#     for element in main_container.find_all(recursive=True):
-#         text = convert_to_markdown(element)
-#         text = text.replace('‘', '`').replace('’', '`')
-#         markdown.append(text)
-
-#     return ''.join(markdown)
-
-# def convert_to_markdown_and_save(endpoint_name, html_content):
-#     markdown_content = html_to_markdown(str(html_content))
-#     with open(f'{endpoint_name}_endpoint.md', 'w') as file:
-#         file.write(markdown_content)
                 
 
 if __name__ == '__main__':
