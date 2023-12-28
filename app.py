@@ -147,13 +147,24 @@ def find_anchors_and_corresponding_divs():
 def endpoint_details(element):
     """Extract and format the endpoint details from the given HTML element."""
     details_md = "\n### Endpoint\n\n"
-    method_element = element.find('span', class_='base__RequestMethod-sc-127j6tq-1')
-    url_element = element.find('div', class_='Text__StyledText-sc-6aor3p-0')
-    if method_element and url_element:
-        method = method_element.get_text().strip().upper()
-        url = url_element.get_text().strip()
-        details_md += f"- Method: `{method}`\n"
-        details_md += f"- Url: `{url}`\n\n"
+    method_elements = element.find_all('span', class_='base__RequestMethod-sc-127j6tq-1')
+    url_elements = element.find_all('div', class_='Text__StyledText-sc-6aor3p-0')
+    if method_elements and url_elements:
+        methods_urls = zip(method_elements, url_elements)
+        for method_element, url_element in methods_urls:
+            method = method_element.get_text().strip().upper()
+            urls = url_element.find_all('div')
+            if len(urls) > 1:
+                details_md += f"- Method: `{method}`\n"
+                details_md += "  - Urls:\n"
+                for url in urls:
+                    url_text = url.get_text().strip()
+                    details_md += f"    - `{url_text}`\n"
+            else:
+                url_text = urls[0].get_text().strip() if urls else ''
+                details_md += f"- Method: `{method}`\n"
+                details_md += f"  - Url: `{url_text}`\n"
+        details_md += "\n"
     return details_md
 
 
