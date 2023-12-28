@@ -66,8 +66,17 @@ def endpoint_parameters(element):
             is_required = '*' in param_name
             param_name = param_name.replace('*', '').strip()
             required_text = "<span style='color: red'>*</span>" if is_required else ""
-            description_div = param_div.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')
-            param_desc = description_div.get_text().strip() if description_div else ''
+            description_div = param_div.find_next_sibling('div', class_='Parameters__Description-sc-ize944-1')            
+            param_desc = ""
+            if description_div:
+                for content in description_div.contents:
+                    if content.name == 'a' and content.has_attr('href'):
+                        link_text = content.get_text().strip()
+                        link_href = content['href']
+                        param_desc += f"[{link_text}]({link_href})"
+                    else:
+                        param_desc += content if isinstance(content, str) else content.get_text()
+            param_desc = param_desc.strip()
             parameters_md += f"- **{param_name}{required_text}**: {param_desc}\n"
             param_options = param_div.find('menu')
             if param_options:
