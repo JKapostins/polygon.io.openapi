@@ -19,6 +19,7 @@ import requests
 import re
 from markdownify import markdownify as md
 from bs4 import BeautifulSoup
+import re
 
 def parse_html_document(url):
     response = requests.get(url)
@@ -83,6 +84,9 @@ def endpoint_parameters(element):
                 options_md = '\n'.join([f"  - `{li.get_text().strip()}`" for li in param_options.find_all('li')])
                 parameters_md += options_md + "\n\n"
     return parameters_md
+def sanitize_filename(name):
+    """Sanitize the filename to remove special characters."""
+    return re.sub(r'[^\w\s-]', '_', name)
 
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
@@ -90,7 +94,7 @@ def find_anchors_and_corresponding_divs():
     anchors = soup.find_all('a')
     for anchor in anchors:
         h2 = anchor.find('h2')
-        endpoint_name = h2.text if h2 else None
+        endpoint_name = sanitize_filename(h2.text) if h2 else None
         if endpoint_name:
             endpoint_element = anchor.find_parent('div')
             while True:
