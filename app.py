@@ -128,22 +128,26 @@ def find_anchors_and_corresponding_divs():
                     file.write(markdown)
 
 
-# TODO: It appears there can be multiple url's for a given endpoint (ex delayed vs realtime). in the case where there are multiple use a bullet list. See EXAMPLE below.
+# TODO: Create a genearic function named exampleEndpointRequest that can extract the endpoint details to be used as an example.
 # EXAMPLE:
-# <div class="base__ScrollableX-sc-127j6tq-0 dFRCxS">
-#     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 dsgUMc"
-#         spacing="0"><span
-#             class="Chip-sc-1pr7fdu-0 base__RequestMethod-sc-127j6tq-1 cBmwnx cyKnyn">ws</span>
-#         <div class="Text__StyledText-sc-6aor3p-0 iqngUc" color="inherit" size="2">
-#             <div><span class="StyledSpacing-sc-wahrw5-0 fUSYAk"><label
-#                         class="Label__StyledLabel-sc-4bqfys-0 fKbvsk">Delayed<!-- -->:</label></span>wss://delayed.polygon.io/stocks
-#             </div>
-#             <div><span class="StyledSpacing-sc-wahrw5-0 fUSYAk"><label
-#                         class="Label__StyledLabel-sc-4bqfys-0 fKbvsk">Real-time<!-- -->:</label></span>wss://socket.polygon.io/stocks
-#             </div>
+# <div class="Container__StyledContainer-sc-83etil-0 fODFXk" spacing="0">
+#     <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ" order="0">
+#         <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
+#                 class="Text__StyledText-sc-6aor3p-0 kjHyPJ" color="inherit" height="1.3"
+#                 size="2">https://api.polygon.io/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}?apiKey=*</span>
 #         </div>
 #     </div>
+#     <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq" order="0"><button
+#             class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
+#                 class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
+#                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
+#     </div>
 # </div>
+#FORMAT:
+# #### Example Request
+# ```
+#       https://api.polygon.io/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}?apiKey=*
+# ```
 def endpoint_details(element):
     """Extract and format the endpoint details from the given HTML element."""
     details_md = "\n### Endpoint\n\n"
@@ -167,7 +171,6 @@ def endpoint_details(element):
                         else:
                             url_text = url.get_text().strip()
                             details_md += f"  - `{url_text}`\n"
-                        details_md += f"  - `{url_text}`\n"
                 else:
                     url_text = urls[0].get_text().strip()
                     details_md += f"- Url: `{url_text}`\n"
