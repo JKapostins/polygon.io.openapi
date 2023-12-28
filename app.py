@@ -152,7 +152,7 @@ def endpoint_description(element):
 def endpoint_response_attributes(element):
     """Extract and format the response attributes from the given HTML element."""
     attributes_md = "\n### Response Attributes\n\n"
-    attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0', recursive=False)
+    attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0')
     for attr_div in attribute_divs:
         name_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
         type_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 eelqYu')
@@ -164,13 +164,11 @@ def endpoint_response_attributes(element):
             required_text = " <span style='color: red'>*</span>" if is_required else ""
             attr_type = type_span.get_text().strip()
             description = description_p.get_text().strip()
-            if name != 'results':
-                attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
+            attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
             if attr_type.lower() == 'array':
                 # Handle nested structure for array type
                 nested_attrs = attr_div.find_next_sibling('div')
                 if nested_attrs:
-                    attributes_md += f"- **{name}{required_text}** ({attr_type}):\n"
                     attributes_md += "  - **Attributes**:\n"
                     nested_attribute_divs = nested_attrs.find_all('div', recursive=False)
                     for nested_attr_div in nested_attribute_divs:
@@ -185,8 +183,6 @@ def endpoint_response_attributes(element):
                             nested_attr_type = nested_type_span.get_text().strip()
                             nested_description = nested_description_p.get_text().strip()
                             attributes_md += f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
-            else:
-                attributes_md += f"- **{name}{required_text}** ({attr_type}): {description}\n"
     return attributes_md
 
 # TODO: This OUTPUT is what endpoint_response_attributes generates, but i'm looking for this EXPECTED_OUTPUT. Notice the 'results' array and the c, h, l, n, o, otc, t, v, vw attributes are all nested under the results array. which was good, but they were also listed outside the array which is bad.
@@ -239,6 +235,7 @@ def endpoint_response_attributes(element):
 #   - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
 #   - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
 #   - **vw** (number): The volume weighted average price.
+
 # - **next_url** (string): If present, this value can be used to fetch the next page of data.
 
 # Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
