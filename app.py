@@ -17,6 +17,7 @@
 # Missing import for requests added
 import requests
 import re
+import os
 from markdownify import markdownify as md
 from bs4 import BeautifulSoup
 import re
