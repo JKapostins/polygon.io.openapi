@@ -88,7 +88,9 @@ def sanitize_filename(name):
     """Sanitize the filename to remove special characters."""
     sanitized_name = re.sub(r'[^\w\s-]', '_', name)
     sanitized_name = re.sub(r'\s+', '_', sanitized_name)
-    return sanitized_name.lower()
+    sanitized_name = sanitized_name.lower()
+    sanitized_name = re.sub(r'_{2,}', '_', sanitized_name)  # Replace two or more underscores with one
+    return sanitized_name
 
 def find_anchors_and_corresponding_divs():
     with open('body.html', 'r') as file:
