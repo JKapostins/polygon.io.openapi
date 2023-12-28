@@ -157,18 +157,18 @@ def endpoint_details(element):
             if urls:
                 details_md += f"- Method: `{method}`\n"
                 if len(urls) > 1:
-                    details_md += "  - Urls:\n"
+                    details_md += "- Urls:\n"
                     for url in urls:
                         url_text = url.get_text().strip()
-                        details_md += f"    - `{url_text}`\n"
+                        details_md += f"  - `{url_text}`\n"
                 else:
                     url_text = urls[0].get_text().strip()
-                    details_md += f"  - Url: `{url_text}`\n"
+                    details_md += f"- Url: `{url_text}`\n"
             else:
                 # Fallback to the text of the url_element itself if no divs are found
                 url_text = url_element.get_text().strip()
                 details_md += f"- Method: `{method}`\n"
-                details_md += f"  - Url: `{url_text}`\n"
+                details_md += f"- Url: `{url_text}`\n"
         details_md += "\n"
     return details_md
 
