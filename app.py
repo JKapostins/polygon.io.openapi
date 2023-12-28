@@ -120,6 +120,7 @@ def find_anchors_and_corresponding_divs():
                 markdown += endpoint_details(endpoint_element)
                 markdown += endpoint_description(endpoint_element)
                 markdown += endpoint_parameters(endpoint_element)
+                markdown += endpoint_response_attributes(endpoint_element)
                 markdown = markdown.replace('‘', '`').replace('’', '`')
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
@@ -184,7 +185,59 @@ def endpoint_response_attributes(element):
                             attributes_md += f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
     return attributes_md
 
-# TODO: Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
+# TODO: This OUTPUT is what endpoint_response_attributes generates, but i'm looking for this EXPECTED_OUTPUT. Notice the 'results' array and the c, h, l, n, o, otc, t, v, vw attributes are all nested under the results array. which was good, but they were also listed outside the array which is bad.
+
+#OUTPUT
+### Response Attributes
+
+# - **ticker <span style='color: red'>*</span>** (string): The exchange symbol that this item is traded under.
+# - **adjusted <span style='color: red'>*</span>** (boolean): Whether or not this response was adjusted for splits.
+# - **queryCount <span style='color: red'>*</span>** (integer): The number of aggregates (minute or day) used to generate the response.
+# - **request_id <span style='color: red'>*</span>** (string): A request id assigned by the server.
+# - **resultsCount <span style='color: red'>*</span>** (integer): The total number of results for this request.
+# - **status <span style='color: red'>*</span>** (string): The status of this request's response.
+# - **results** (array): 
+#   - **Attributes**:
+#     - **c <span style='color: red'>*</span>** (number): The close price for the symbol in the given time period.
+#     - **h <span style='color: red'>*</span>** (number): The highest price for the symbol in the given time period.
+#     - **l <span style='color: red'>*</span>** (number): The lowest price for the symbol in the given time period.
+#     - **n** (integer): The number of transactions in the aggregate window.
+#     - **o <span style='color: red'>*</span>** (number): The open price for the symbol in the given time period.
+#     - **otc** (boolean): Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
+#     - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
+#     - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
+#     - **vw** (number): The volume weighted average price.
+# - **c <span style='color: red'>*</span>** (number): The close price for the symbol in the given time period.
+# - **h <span style='color: red'>*</span>** (number): The highest price for the symbol in the given time period.
+# - **l <span style='color: red'>*</span>** (number): The lowest price for the symbol in the given time period.
+# - **n** (integer): The number of transactions in the aggregate window.
+# - **o <span style='color: red'>*</span>** (number): The open price for the symbol in the given time period.
+# - **otc** (boolean): Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
+# - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
+# - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
+# - **vw** (number): The volume weighted average price.
+# - **next_url** (string): If present, this value can be used to fetch the next page of data.
+#
+#EXPECTED_OUTPUT
+# - **ticker <span style='color: red'>*</span>** (string): The exchange symbol that this item is traded under.
+# - **adjusted <span style='color: red'>*</span>** (boolean): Whether or not this response was adjusted for splits.
+# - **queryCount <span style='color: red'>*</span>** (integer): The number of aggregates (minute or day) used to generate the response.
+# - **request_id <span style='color: red'>*</span>** (string): A request id assigned by the server.
+# - **resultsCount <span style='color: red'>*</span>** (integer): The total number of results for this request.
+# - **status <span style='color: red'>*</span>** (string): The status of this request's response.
+# - **results** (array): 
+#   - **c <span style='color: red'>*</span>** (number): The close price for the symbol in the given time period.
+#   - **h <span style='color: red'>*</span>** (number): The highest price for the symbol in the given time period.
+#   - **l <span style='color: red'>*</span>** (number): The lowest price for the symbol in the given time period.
+#   - **n** (integer): The number of transactions in the aggregate window.
+#   - **o <span style='color: red'>*</span>** (number): The open price for the symbol in the given time period.
+#   - **otc** (boolean): Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
+#   - **t <span style='color: red'>*</span>** (integer): The Unix Msec timestamp for the start of the aggregate window.
+#   - **v <span style='color: red'>*</span>** (number): The trading volume of the symbol in the given time period.
+#   - **vw** (number): The volume weighted average price.
+# - **next_url** (string): If present, this value can be used to fetch the next page of data.
+
+# Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
 # CONSIDERATIONS
 # -The heading should always be named Response Attributes
 # -Some attributes have a * at the end indicating they are required. this can have an impact on formatting but it is important to indicate what params are required in md.
