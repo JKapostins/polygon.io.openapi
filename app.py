@@ -152,8 +152,8 @@ def endpoint_description(element):
 def endpoint_response_attributes(element):
     """Extract and format the response attributes from the given HTML element."""
     attributes_md = "\n### Response Attributes\n\n"
+    attributes_md += "<span style='color: red'>*</span> indicates the attribute is gaurenteed to be returned, otherwise the attribtue may not be returned so ensure your parser can handle these cases.\n\n"
     attribute_divs = element.find_all('div', class_='ResponseAttributes__OverflowXAuto-sc-hzb6em-0')
-    existing_attributes = set()
     for attr_div in attribute_divs:
         name_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
         type_span = attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 eelqYu')
@@ -165,13 +165,14 @@ def endpoint_response_attributes(element):
             required_text = " <span style='color: red'>*</span>" if is_required else ""
             attr_type = type_span.get_text().strip()
             description = description_p.get_text().strip()
-            
-
+            attribute =  f"- **{name}{required_text}** ({attr_type}): {description}\n"
+                # Check if the attribute is already in attributes_md
+            if attribute not in attributes_md:
+                attributes_md += attribute
             if attr_type.lower() == 'array':
                 # Handle nested structure for array type
                 nested_attrs = attr_div.find_next_sibling('div')
                 if nested_attrs:
-                    attributes_md += "  - **Attributes**:\n"
                     nested_attribute_divs = nested_attrs.find_all('div', recursive=False)
                     for nested_attr_div in nested_attribute_divs:
                         nested_name_span = nested_attr_div.find('span', class_='Text__StyledText-sc-6aor3p-0 ggvwlD')
@@ -184,300 +185,53 @@ def endpoint_response_attributes(element):
                             nested_required_text = " <span style='color: red'>*</span>" if nested_is_required else ""
                             nested_attr_type = nested_type_span.get_text().strip()
                             nested_description = nested_description_p.get_text().strip()
-                            nested_attribute = f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
-                            if nested_attribute not in existing_attributes:
-                                attributes_md += nested_attribute
-                                existing_attributes.add(nested_attribute)
-                            attributes_md += f"    - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
-            else:
-                attribute =  f"- **{name}{required_text}** ({attr_type}): {description}\n"
-                if attribute not in existing_attributes:
-                    attributes_md += attribute
-                    existing_attributes.add(attribute)
+                            attributes_md += f"  - **{nested_name}{nested_required_text}** ({nested_attr_type}): {nested_description}\n"
     return attributes_md
 
 
-# Create a gneric function called endpointResponseAttributes that uses the classes of the ELEMENT using the CONSIDERATIONS.
+
+# TODO: Create a gneric function called endpointResponseObject that uses the classes of the ELEMENT using the CONSIDERATIONS.
 # CONSIDERATIONS
-# -The heading should always be named Response Attributes
-# -Some attributes have a * at the end indicating they are required. this can have an impact on formatting but it is important to indicate what params are required in md.
-# -Some attributes are an 'array' type which have a nested structure. this should be indicated in the md. See the 'results' attribute for an array is structured in the html.
-# -Be sure to include the name, type and description of each attribute.
+# -This should be a code block in json format. You should pretty print the json.
 # ELEMENT
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">ticker<span
-#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">string</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>The exchange symbol that this item is traded under.</p>
+# <div class="GridItem__StyledGridItem-sc-1xj2soh-0 jHuWkP">
+# <div class="StyledSpacing-sc-wahrw5-0 bERlWl">
+#     <div class="Text__StyledText-sc-6aor3p-0 iGHfaJ SubsectionLabel__StyledLabel-sc-ynvayg-0 kgOCfx"
+#         color="secondary" size="3">Response Object</div>
+#     <pre class="CodeBlock__StyledHighlighter-sc-14zdm7l-0 dEqsNg"
+#         style="display:block;overflow-x:auto;padding:0.5em;color:#383a42;background:#fafafa"><code class="language-json" style="white-space:pre"><span>{
+# </span><span>  </span><span style="color:#986801">"adjusted"</span><span>: </span><span style="color:#0184bb">true</span><span>,
+# </span><span>  </span><span style="color:#986801">"next_url"</span><span>: </span><span style="color:#50a14f">"https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/1578114000000/2020-01-10?cursor=bGltaXQ9MiZzb3J0PWFzYw"</span><span>,
+# </span><span>  </span><span style="color:#986801">"queryCount"</span><span>: </span><span style="color:#986801">2</span><span>,
+# </span><span>  </span><span style="color:#986801">"request_id"</span><span>: </span><span style="color:#50a14f">"6a7e466379af0a71039d60cc78e72282"</span><span>,
+# </span><span>  </span><span style="color:#986801">"results"</span><span>: [
+# </span>    {
+# <span>      </span><span style="color:#986801">"c"</span><span>: </span><span style="color:#986801">75.0875</span><span>,
+# </span><span>      </span><span style="color:#986801">"h"</span><span>: </span><span style="color:#986801">75.15</span><span>,
+# </span><span>      </span><span style="color:#986801">"l"</span><span>: </span><span style="color:#986801">73.7975</span><span>,
+# </span><span>      </span><span style="color:#986801">"n"</span><span>: </span><span style="color:#986801">1</span><span>,
+# </span><span>      </span><span style="color:#986801">"o"</span><span>: </span><span style="color:#986801">74.06</span><span>,
+# </span><span>      </span><span style="color:#986801">"t"</span><span>: </span><span style="color:#986801">1577941200000</span><span>,
+# </span><span>      </span><span style="color:#986801">"v"</span><span>: </span><span style="color:#986801">135647456</span><span>,
+# </span><span>      </span><span style="color:#986801">"vw"</span><span>: </span><span style="color:#986801">74.6099</span><span>
+# </span>    },
+# <!-- -->    {
+# <span>      </span><span style="color:#986801">"c"</span><span>: </span><span style="color:#986801">74.3575</span><span>,
+# </span><span>      </span><span style="color:#986801">"h"</span><span>: </span><span style="color:#986801">75.145</span><span>,
+# </span><span>      </span><span style="color:#986801">"l"</span><span>: </span><span style="color:#986801">74.125</span><span>,
+# </span><span>      </span><span style="color:#986801">"n"</span><span>: </span><span style="color:#986801">1</span><span>,
+# </span><span>      </span><span style="color:#986801">"o"</span><span>: </span><span style="color:#986801">74.2875</span><span>,
+# </span><span>      </span><span style="color:#986801">"t"</span><span>: </span><span style="color:#986801">1578027600000</span><span>,
+# </span><span>      </span><span style="color:#986801">"v"</span><span>: </span><span style="color:#986801">146535512</span><span>,
+# </span><span>      </span><span style="color:#986801">"vw"</span><span>: </span><span style="color:#986801">74.7026</span><span>
+# </span>    }
+# <!-- -->  ],
+# <span>  </span><span style="color:#986801">"resultsCount"</span><span>: </span><span style="color:#986801">2</span><span>,
+# </span><span>  </span><span style="color:#986801">"status"</span><span>: </span><span style="color:#50a14f">"OK"</span><span>,
+# </span><span>  </span><span style="color:#986801">"ticker"</span><span>: </span><span style="color:#50a14f">"AAPL"</span><span>
+# </span>}</code></pre>
 #             </div>
 #         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">adjusted<span
-#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">boolean</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>Whether or not this response was adjusted for splits.</p>
-#             </div>
-#         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">queryCount<span
-#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">integer</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>The number of aggregates (minute or day) used to generate the response.</p>
-#             </div>
-#         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">request_id<span
-#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">string</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>A request id assigned by the server.</p>
-#             </div>
-#         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
-#                         size="2">resultsCount<span class="Text__StyledText-sc-6aor3p-0 iBsCAz"
-#                             color="danger" size="2">*</span></span></span><span
-#                     class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary" size="2">integer</span>
-#             </div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>The total number of results for this request.</p>
-#             </div>
-#         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">status<span
-#                             class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                             size="2">*</span></span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">string</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>The status of this request's response.</p>
-#             </div>
-#         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
-#                         size="2">results</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">array</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd"></div>
-#         </div>
-#     </div>
-#     <div class="StyledSpacing-sc-wahrw5-0 eJGJaX">
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">c<span
-#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                                     size="2">*</span></span></span><span
-#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
-#                             size="2">number</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The close price for the symbol in the given time period.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">h<span
-#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                                     size="2">*</span></span></span><span
-#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
-#                             size="2">number</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The highest price for the symbol in the given time period.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">l<span
-#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                                     size="2">*</span></span></span><span
-#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
-#                             size="2">number</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The lowest price for the symbol in the given time period.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
-#                                 size="2">n</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                             color="secondary" size="2">integer</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The number of transactions in the aggregate window.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">o<span
-#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                                     size="2">*</span></span></span><span
-#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
-#                             size="2">number</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The open price for the symbol in the given time period.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
-#                                 size="2">otc</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                             color="secondary" size="2">boolean</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>Whether or not this aggregate is for an OTC ticker. This field will be left off
-#                             if false.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">t<span
-#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                                     size="2">*</span></span></span><span
-#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
-#                             size="2">integer</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The Unix Msec timestamp for the start of the aggregate window.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit" size="2">v<span
-#                                     class="Text__StyledText-sc-6aor3p-0 iBsCAz" color="danger"
-#                                     size="2">*</span></span></span><span
-#                             class="Text__StyledText-sc-6aor3p-0 eelqYu" color="secondary"
-#                             size="2">number</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The trading volume of the symbol in the given time period.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#         <div>
-#             <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#                 <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#                     <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                             class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                                 class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
-#                                 size="2">vw</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                             color="secondary" size="2">number</span></div>
-#                     <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                         <p>The volume weighted average price.</p>
-#                     </div>
-#                 </div>
-#             </div>
-#             <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-#         </div>
-#     </div>
-# </div>
-# <div>
-#     <div class="ResponseAttributes__OverflowXAuto-sc-hzb6em-0 kvQDCw">
-#         <div class="StyledSpacing-sc-wahrw5-0 ivOril">
-#             <div class="StyledSpacing-sc-wahrw5-0 gClFQA"><span
-#                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
-#                         class="Text__StyledText-sc-6aor3p-0 ggvwlD" color="inherit"
-#                         size="2">next_url</span></span><span class="Text__StyledText-sc-6aor3p-0 eelqYu"
-#                     color="secondary" size="2">string</span></div>
-#             <div class="ResponseAttributes__Description-sc-hzb6em-1 dxfgDd">
-#                 <p>If present, this value can be used to fetch the next page of data.</p>
-#             </div>
-#         </div>
-#     </div>
-#     <hr class="HorizontalRule__HR-sc-r26c8-0 gBqUvA" />
-# </div>
 
 
                 
