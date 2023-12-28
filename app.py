@@ -132,12 +132,10 @@ def find_anchors_and_corresponding_divs():
 def example_endpoint_request(element):
     """Extract and format the example endpoint request from the given HTML element."""
     example_request_md = "\n#### Example Request\n\n"
-    container = element.find('div', class_='Container__StyledContainer-sc-83etil-0')
-    if container:
-        text_wrapper = container.find('div', class_='Copy__TextWrapper-sc-71i6s4-1')
-        if text_wrapper:
-            request_url = text_wrapper.get_text().strip()
-            example_request_md += f"```\n{request_url}\n```\n"
+    text_wrapper = element.find('div', class_='Copy__TextWrapper-sc-71i6s4-1 bsrJTO')
+    if text_wrapper:
+        request_url = text_wrapper.get_text().strip()
+        example_request_md += f"```\n{request_url}\n```\n"
     return example_request_md
 
 # TODO: Create a genearic function named exampleEndpointRequest that can extract the endpoint details to be used as an example.
