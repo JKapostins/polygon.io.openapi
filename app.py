@@ -159,7 +159,14 @@ def endpoint_details(element):
                 if len(urls) > 1:
                     details_md += "- Urls:\n"
                     for url in urls:
-                        url_text = url.get_text().strip()
+                        label = url.find('label')
+                        if label:
+                            label_text = label.get_text().strip()
+                            url_text = url.get_text().strip().replace(label_text, '').strip()
+                            details_md += f"  - {label_text} `{url_text}`\n"
+                        else:
+                            url_text = url.get_text().strip()
+                            details_md += f"  - `{url_text}`\n"
                         details_md += f"  - `{url_text}`\n"
                 else:
                     url_text = urls[0].get_text().strip()
