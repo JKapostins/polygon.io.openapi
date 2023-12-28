@@ -136,6 +136,15 @@ def endpoint_details(element):
     return details_md
 
 
+def endpoint_description(element):
+    """Extract and format the endpoint description from the given HTML element."""
+    description_md = "\n### Description\n\n"
+    description_elements = element.find_all('div', class_='Text__StyledText-sc-6aor3p-0')
+    for desc_element in description_elements:
+        if 'jugoJw' in desc_element.get('class', []):
+            description_md += f"{desc_element.get_text().strip()}\n\n"
+    return description_md.replace('<br />', '\n').replace('<br>', '\n')
+
 # TODO: Create a generic function called endpointDescription that uses the classes of the ELEMENT to pick it out and parse out the POINTS_OF_INTEREST in this FORMAT. Be sure to run this replace function:
 # ELEMENT
 # <div class="Text__StyledText-sc-6aor3p-0 jugoJw StyledSpacing-sc-wahrw5-0 hKvqOb" color="inherit"
