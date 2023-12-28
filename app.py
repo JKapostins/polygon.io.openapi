@@ -121,6 +121,7 @@ def find_anchors_and_corresponding_divs():
                 markdown += endpoint_description(endpoint_element)
                 markdown += endpoint_parameters(endpoint_element)
                 markdown += endpoint_response_attributes(endpoint_element)
+                markdown += endpoint_response_object(endpoint_element)
                 markdown = markdown.replace('‘', '`').replace('’', '`')
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
@@ -233,16 +234,6 @@ def endpoint_response_attributes(element):
 #             </div>
 #         </div>
 
-
-                
-
-if __name__ == '__main__':
-    url = 'https://polygon.io/docs/stocks/getting-started'
-    soup = parse_html_document(url)
-    remove_first_nav_element(soup)
-    extract_and_save_main_nav(soup)
-    extract_and_save_main_content(soup)
-    find_anchors_and_corresponding_divs()
 def endpoint_response_object(element):
     """Extract and format the response object from the given HTML element."""
     response_object_md = "\n### Response Object\n\n```json\n"
@@ -253,3 +244,13 @@ def endpoint_response_object(element):
             response_object_md += pre.get_text().strip() + "\n"
     response_object_md += "```\n\n"
     return response_object_md
+                
+
+if __name__ == '__main__':
+    url = 'https://polygon.io/docs/stocks/getting-started'
+    soup = parse_html_document(url)
+    remove_first_nav_element(soup)
+    extract_and_save_main_nav(soup)
+    extract_and_save_main_content(soup)
+    find_anchors_and_corresponding_divs()
+
