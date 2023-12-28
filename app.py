@@ -98,7 +98,7 @@ def sanitize_filename(name):
 def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     os.makedirs('output/markdown', exist_ok=True)
-    with open('body.html', 'r') as file:
+    with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
     for anchor in anchors:
