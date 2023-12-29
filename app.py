@@ -482,7 +482,22 @@ def create_api_overview_markdown():
                 next_p = section.find_next_sibling('p')
                 while next_p and next_p.name == 'p':
                     api_overview_md += f"{next_p.get_text().strip()}\n\n"
-                    next_p = next_p.find_next_sibling('p')
+                    # Check for code blocks in the paragraph and wrap them with backticks
+                    if next_p:
+                        code_blocks = next_p.find_all('span', class_='Text__StyledText-sc-6aor3p-0')
+                        for code_block in code_blocks:
+                            if 'kjHyPJ' in code_block.get('class', []):  # This class is used for inline code in the HTML
+                                code_text = code_block.get_text().strip()
+                                # Replace placeholder with YOUR_API_KEY_HERE
+                                if 'apiKey=*' in code_text:
+                                    code_text = code_text.replace('apiKey=*', 'apiKey=YOUR_API_KEY_HERE')
+                                if 'Bearer <token>' in code_text:
+                                    code_text = code_text.replace('Bearer <token>', 'Bearer YOUR_API_KEY_HERE')
+                                api_overview_md = api_overview_md.replace(code_text, f"```\n{code_text}\n```")
+                    next_p = next_p.find_next_sibling('p') if next_p else None
+    os.makedirs('output/markdown', exist_ok=True)
+    with open('output/markdown/api_overview.md', 'w') as file:
+        file.write(api_overview_md)
 
                 # Check for code blocks in the paragraph and wrap them with backticks
                 code_blocks = next_p.find_all('span', class_='Text__StyledText-sc-6aor3p-0')
