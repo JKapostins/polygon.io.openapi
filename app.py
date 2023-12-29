@@ -347,7 +347,7 @@ def create_modular_reference(output_dir, sections):
                     if first_line.startswith('#'):
                         # Parse the first line as HTML to extract the text content
                         soup = BeautifulSoup(first_line, 'html.parser')
-                        display_name = soup.get_text().strip()
+                        display_name = soup.get_text().replace('##', '').strip()
                     else:
                         display_name = md_file.replace('_', ' ').replace('.md', '')
                 reference_md += f"- [{display_name}]({section}/markdown/rest/{md_file})\n"
@@ -361,7 +361,7 @@ def create_modular_reference(output_dir, sections):
                     if first_line.startswith('#'):
                         # Parse the first line as HTML to extract the text content
                         soup = BeautifulSoup(first_line, 'html.parser')
-                        display_name = soup.get_text().strip()
+                        display_name = soup.get_text().replace('##', '').strip()
                     else:
                         display_name = md_file.replace('_', ' ').replace('.md', '')
                 reference_md += f"- [{display_name}]({section}/markdown/websocket/{md_file})\n"
@@ -386,13 +386,13 @@ if __name__ == '__main__':
         os.makedirs(f'{markdown_dir}/websocket', exist_ok=True)
 
 
-        # soup = parse_html_document(url)
-        # remove_first_nav_element(soup)
-        # extract_and_save_main_nav(soup, html_dir)
-        # extract_and_save_main_content(soup, html_dir)
-        # create_api_overview_markdown(html_dir,markdown_dir)
-        # create_websocket_api_overview_markdown(html_dir, markdown_dir)
-        # find_anchors_and_corresponding_divs(html_dir, markdown_dir)
+        soup = parse_html_document(url)
+        remove_first_nav_element(soup)
+        extract_and_save_main_nav(soup, html_dir)
+        extract_and_save_main_content(soup, html_dir)
+        create_api_overview_markdown(html_dir,markdown_dir)
+        create_websocket_api_overview_markdown(html_dir, markdown_dir)
+        find_anchors_and_corresponding_divs(html_dir, markdown_dir)
     
     create_modular_reference('output', sections)
 
