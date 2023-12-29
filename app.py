@@ -128,8 +128,6 @@ def create_websocket_api_overview_markdown(html_dir, markdown_dir):
 def find_anchors_and_corresponding_divs(html_dir, markdown_dir):
     rest_markdown_path = f'{markdown_dir}/rest'
     websocket_markdown_path = f'{markdown_dir}/websocket'
-    rest_endpoints_order = []
-    websocket_endpoints_order = []
     with open(f'{html_dir}/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
@@ -166,14 +164,8 @@ def find_anchors_and_corresponding_divs(html_dir, markdown_dir):
                 is_websocket_endpoint = "- Method: `WS`" in markdown
                 # Choose the correct path based on the endpoint type
                 markdown_path = websocket_markdown_path if is_websocket_endpoint else rest_markdown_path
-                # Store the filename to maintain the order
-                if is_websocket_endpoint:
-                    websocket_endpoints_order.append(endpoint_file_name)
-                else:
-                    rest_endpoints_order.append(endpoint_file_name)
                 with open(f'{markdown_path}/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
-    return rest_endpoints_order, websocket_endpoints_order
 
 
 def example_endpoint_request(element):
@@ -280,7 +272,7 @@ def endpoint_response_object(element):
         response_object_md += pre.get_text().strip() + "\n"
     response_object_md += "```\n\n"
     return response_object_md
-
+                
 
 def create_api_overview_markdown(html_dir, markdown_dir):
     with open(f'{html_dir}/body.html', 'r') as file:
@@ -313,7 +305,7 @@ def create_api_overview_markdown(html_dir, markdown_dir):
         code_sections = authentication.find_all_next('span', class_=['Text__StyledText-sc-6aor3p-0','kjHyPJ'])
         if code_sections:
             api_overview_md += f"```\n{code_sections[0].get_text().strip().replace('*', '{POLYGON_API_KEY}')}\n```\n\n"
-
+        
         if(bearer_description):
             api_overview_md += f"{bearer_description.get_text().strip()}\n\n"
 
@@ -352,7 +344,7 @@ Each endpoint is documented in its own markdown file.
         reference_md += f"## {section.capitalize()}\n"
         reference_md += "### REST API\n"
         rest_md_dir = f'{output_dir}/{section}/markdown/rest'
-        rest_md_files = rest_endpoints_order
+        rest_md_files = os.listdir(rest_md_dir)
         # Place the REST API overview file at the top
         rest_md_files = sorted(rest_md_files, key=lambda x: (x != 'rest_api_overview.md', x))
         for md_file in rest_md_files:
@@ -368,7 +360,7 @@ Each endpoint is documented in its own markdown file.
                 reference_md += f"- [{display_name}]({section}/markdown/rest/{md_file})\n"
         reference_md += "\n### WebSocket API\n"
         websocket_md_dir = f'{output_dir}/{section}/markdown/websocket'
-        websocket_md_files = websocket_endpoints_order
+        websocket_md_files = os.listdir(websocket_md_dir)
         # Ensure the WebSocket API overview file is at the top
         for md_file in sorted(websocket_md_files, key=lambda x: (x != 'websocket_api_overview.md', x)):
             if md_file.endswith('.md'):
@@ -389,8 +381,6 @@ if __name__ == '__main__':
     sections = ['stocks', 'options', 'indices', 'forex', 'crypto']
     base_url = 'https://polygon.io/docs/{}/getting-started'
 
-    rest_endpoints_order = []
-    websocket_endpoints_order = []
     for section in sections:
         url = base_url.format(section)
         output_dir = f'output/{section}'
@@ -410,8 +400,8 @@ if __name__ == '__main__':
         extract_and_save_main_content(soup, html_dir)
         create_api_overview_markdown(html_dir,markdown_dir)
         create_websocket_api_overview_markdown(html_dir, markdown_dir)
-        rest_order, websocket_order = find_anchors_and_corresponding_divs(html_dir, markdown_dir)
-    rest_endpoints_order.extend(rest_order)
-    websocket_endpoints_order.extend(websocket_order)
-
+        find_anchors_and_corresponding_divs(html_dir, markdown_dir)
+    
     create_modular_reference('output', sections)
+
+
