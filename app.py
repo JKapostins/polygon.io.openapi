@@ -333,6 +333,24 @@ def create_api_overview_markdown(html_dir, markdown_dir):
         file.write(api_overview_md)
 
 
+def create_modular_reference(output_dir, sections):
+    reference_md = "# Polygon.io API Modular Reference\n\n"
+    for section in sections:
+        reference_md += f"## {section.capitalize()}\n"
+        reference_md += "### REST API\n"
+        rest_md_files = os.listdir(f'{output_dir}/{section}/markdown/rest')
+        for md_file in sorted(rest_md_files):
+            if md_file.endswith('.md'):
+                reference_md += f"- [{md_file.replace('_', ' ').replace('.md', '')}]({section}/markdown/rest/{md_file})\n"
+        reference_md += "\n### WebSocket API\n"
+        websocket_md_files = os.listdir(f'{output_dir}/{section}/markdown/websocket')
+        for md_file in sorted(websocket_md_files):
+            if md_file.endswith('.md'):
+                reference_md += f"- [{md_file.replace('_', ' ').replace('.md', '')}]({section}/markdown/websocket/{md_file})\n"
+        reference_md += "\n"
+    with open(f'{output_dir}/modual_reference.md', 'w') as file:
+        file.write(reference_md)
+
 if __name__ == '__main__':
     sections = ['stocks', 'options', 'indices', 'forex', 'crypto']
     base_url = 'https://polygon.io/docs/{}/getting-started'
@@ -357,6 +375,7 @@ if __name__ == '__main__':
         create_api_overview_markdown(html_dir,markdown_dir)
         create_websocket_api_overview_markdown(html_dir, markdown_dir)
         find_anchors_and_corresponding_divs(html_dir, markdown_dir)
+        create_modular_reference(output_dir, sections)
 
         #TODO: Create a modual_reference.md file that contains links to all the md files. The file should be structured such:
         # # Polygon.io API Modular Reference
