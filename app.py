@@ -338,15 +338,23 @@ def create_modular_reference(output_dir, sections):
     for section in sections:
         reference_md += f"## {section.capitalize()}\n"
         reference_md += "### REST API\n"
-        rest_md_files = os.listdir(f'{output_dir}/{section}/markdown/rest')
+        rest_md_dir = f'{output_dir}/{section}/markdown/rest'
+        rest_md_files = os.listdir(rest_md_dir)
         for md_file in sorted(rest_md_files):
             if md_file.endswith('.md'):
-                reference_md += f"- [{md_file.replace('_', ' ').replace('.md', '')}]({section}/markdown/rest/{md_file})\n"
+                with open(f'{rest_md_dir}/{md_file}', 'r') as f:
+                    first_line = f.readline().strip()
+                    display_name = first_line.replace('#', '').strip() if first_line.startswith('#') else md_file.replace('_', ' ').replace('.md', '')
+                reference_md += f"- [{display_name}]({section}/markdown/rest/{md_file})\n"
         reference_md += "\n### WebSocket API\n"
-        websocket_md_files = os.listdir(f'{output_dir}/{section}/markdown/websocket')
+        websocket_md_dir = f'{output_dir}/{section}/markdown/websocket'
+        websocket_md_files = os.listdir(websocket_md_dir)
         for md_file in sorted(websocket_md_files):
             if md_file.endswith('.md'):
-                reference_md += f"- [{md_file.replace('_', ' ').replace('.md', '')}]({section}/markdown/websocket/{md_file})\n"
+                with open(f'{websocket_md_dir}/{md_file}', 'r') as f:
+                    first_line = f.readline().strip()
+                    display_name = first_line.replace('#', '').strip() if first_line.startswith('#') else md_file.replace('_', ' ').replace('.md', '')
+                reference_md += f"- [{display_name}]({section}/markdown/websocket/{md_file})\n"
         reference_md += "\n"
     with open(f'{output_dir}/modual_reference.md', 'w') as file:
         file.write(reference_md)
