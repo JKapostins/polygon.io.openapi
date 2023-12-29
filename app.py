@@ -465,11 +465,37 @@ def endpoint_response_object(element):
     return response_object_md
                 
 
+def create_api_overview_markdown():
+    with open('output/html/body.html', 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
+
+    api_overview_md = "# Stocks API Documentation\n\n"
+    overview_section = soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0')
+    if overview_section:
+        h1 = overview_section.find('h1', class_='Text__StyledText-sc-6aor3p-0')
+        if h1:
+            api_overview_md += f"{h1.get_text().strip()}\n\n"
+
+        sections = ['Authentication', 'Usage', 'Response Types']
+        for section_title in sections:
+            section = overview_section.find('h3', text=section_title)
+            if section:
+                api_overview_md += f"## {section.get_text().strip()}\n\n"
+                next_p = section.find_next_sibling('p')
+                while next_p and next_p.name == 'p':
+                    api_overview_md += f"{next_p.get_text().strip()}\n\n"
+                    next_p = next_p.find_next_sibling('p')
+
+    os.makedirs('output/markdown', exist_ok=True)
+    with open('output/markdown/api_overview.md', 'w') as file:
+        file.write(api_overview_md)
+
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
     soup = parse_html_document(url)
     remove_first_nav_element(soup)
     extract_and_save_main_nav(soup)
     extract_and_save_main_content(soup)
+    create_api_overview_markdown()
     find_anchors_and_corresponding_divs()
 
