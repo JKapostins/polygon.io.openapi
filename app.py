@@ -132,7 +132,9 @@ def create_websocket_api_overview_markdown():
 def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     rest_markdown_path = 'output/markdown/rest'
+    websocket_markdown_path = 'output/markdown/websocket'
     os.makedirs(rest_markdown_path, exist_ok=True)
+    os.makedirs(websocket_markdown_path, exist_ok=True)
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
@@ -165,7 +167,11 @@ def find_anchors_and_corresponding_divs():
                 markdown += endpoint_response_attributes(endpoint_element)                
                 markdown += endpoint_response_object(endpoint_element)
                 markdown = markdown.replace('‘', '`').replace('’', '`')
-                with open(f'{rest_markdown_path}/{endpoint_file_name}.md', 'w') as file:
+                # Determine if the endpoint is a WebSocket endpoint
+                is_websocket_endpoint = "- Method: `WS`" in markdown
+                # Choose the correct path based on the endpoint type
+                markdown_path = websocket_markdown_path if is_websocket_endpoint else rest_markdown_path
+                with open(f'{markdown_path}/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
 
 
