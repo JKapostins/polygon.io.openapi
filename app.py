@@ -344,7 +344,12 @@ def create_modular_reference(output_dir, sections):
             if md_file.endswith('.md'):
                 with open(f'{rest_md_dir}/{md_file}', 'r') as f:
                     first_line = f.readline().strip()
-                    display_name = first_line.replace('#', '').strip() if first_line.startswith('#') else md_file.replace('_', ' ').replace('.md', '')
+                    if first_line.startswith('#'):
+                        # Parse the first line as HTML to extract the text content
+                        soup = BeautifulSoup(first_line, 'html.parser')
+                        display_name = soup.get_text().strip()
+                    else:
+                        display_name = md_file.replace('_', ' ').replace('.md', '')
                 reference_md += f"- [{display_name}]({section}/markdown/rest/{md_file})\n"
         reference_md += "\n### WebSocket API\n"
         websocket_md_dir = f'{output_dir}/{section}/markdown/websocket'
@@ -353,7 +358,12 @@ def create_modular_reference(output_dir, sections):
             if md_file.endswith('.md'):
                 with open(f'{websocket_md_dir}/{md_file}', 'r') as f:
                     first_line = f.readline().strip()
-                    display_name = first_line.replace('#', '').strip() if first_line.startswith('#') else md_file.replace('_', ' ').replace('.md', '')
+                    if first_line.startswith('#'):
+                        # Parse the first line as HTML to extract the text content
+                        soup = BeautifulSoup(first_line, 'html.parser')
+                        display_name = soup.get_text().strip()
+                    else:
+                        display_name = md_file.replace('_', ' ').replace('.md', '')
                 reference_md += f"- [{display_name}]({section}/markdown/websocket/{md_file})\n"
         reference_md += "\n"
     with open(f'{output_dir}/modual_reference.md', 'w') as file:
