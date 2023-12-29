@@ -311,7 +311,10 @@ def create_endpoints_overview_markdown():
     # Extract the endpoints
     anchors = soup.find_all('a', class_='ScrollTargetLink__Anchor-sc-yy6ew6-0')
     for anchor in anchors:
-        endpoint_name = anchor.find('h2').get_text().strip()
+        h2_element = anchor.find('h2')
+        if h2_element is None:
+            continue
+        endpoint_name = h2_element.get_text().strip()
         endpoint_file_name = sanitize_filename(f"{endpoint_name}_endpoint")
         endpoints_md += f"- [{endpoint_name}](markdown/{endpoint_file_name}.md)\n"
 
