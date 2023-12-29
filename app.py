@@ -239,6 +239,7 @@ def endpoint_response_object(element):
 def create_api_overview_markdown():
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
+    api_overview_md = ""
 
     overview_section = soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0')
     if overview_section:
@@ -254,6 +255,11 @@ def create_api_overview_markdown():
                 next_p = section.find_next_sibling('p')
                 while next_p and next_p.name == 'p':
                     api_overview_md += f"{next_p.get_text().strip()}\n\n"
+                    # Check for API key example in a code block
+                    if 'apiKey' in next_p.get_text():
+                        api_key_example = next_p.find('span', class_='Text__StyledText-sc-6aor3p-0')
+                        if api_key_example:
+                            api_overview_md += f"```\n{api_key_example.get_text().strip()}\n```\n\n"
                     next_p = next_p.find_next_sibling('p')
 
     os.makedirs('output/markdown', exist_ok=True)
