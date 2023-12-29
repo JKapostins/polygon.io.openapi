@@ -139,12 +139,10 @@ def example_endpoint_request(element):
         example_request_md += f"```\n{request_url}\n```\n"
     return example_request_md
 
-# TODO: Create a generic function that extracts the api overview elements from the body.html It is a common element that is used as an overview of the api and basic usage that applies to all endpoints. Create this common markdown file with the following CONSIDERATIONS.
+# TODO: There were are two sections missing in create_api_overview_markdown. See CONSIDERATIONS.
 #CONSIDERATIONS:
-#- heading should be # Stocks API Documentation which should be extracted from this element: <h1 class="Text__StyledText-sc-6aor3p-0 cCFnnL Typography__StyledText-sc-102sqjl-0 gHCXHz StyledSpacing-sc-wahrw5-0 bgcozF"
-#                         color="primary" size="7">Stocks<!-- --> API Documentation</h1>
-#- the image isn't required.
-#- Sub heading should be ## Authentication, ## Usage, ## Response Types
+#- https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-01-09/2023-01-09?apiKey=* should be in a code block
+#-Authorization: Bearer should be in a code block
 
 # EXAMPLE:
 # <div
@@ -469,18 +467,17 @@ def create_api_overview_markdown():
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
 
-    api_overview_md = "# Stocks API Documentation\n\n"
     overview_section = soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0')
     if overview_section:
         h1 = overview_section.find('h1', class_='Text__StyledText-sc-6aor3p-0')
         if h1:
-            api_overview_md += f"{h1.get_text().strip()}\n\n"
+            api_overview_md += f"## {h1.get_text().strip()}\n\n"
 
         sections = ['Authentication', 'Usage', 'Response Types']
         for section_title in sections:
             section = overview_section.find('h3', text=section_title)
             if section:
-                api_overview_md += f"## {section.get_text().strip()}\n\n"
+                api_overview_md += f"### {section.get_text().strip()}\n\n"
                 next_p = section.find_next_sibling('p')
                 while next_p and next_p.name == 'p':
                     api_overview_md += f"{next_p.get_text().strip()}\n\n"
