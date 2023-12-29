@@ -344,6 +344,15 @@ def create_api_overview_markdown():
 
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
+
+    #TODO: Add support to loop through all api docs. Each set of documents should be stored in their respective folder (EX: output/stocks/html, output/stocks/markdown, output/options/html, output/options/markdown, etc.)
+    # Stocks - https://polygon.io/docs/stocks/getting-started
+    # Options - https://polygon.io/docs/options/getting-started
+    # Indices - https://polygon.io/docs/indices/getting-started
+    # Forex - https://polygon.io/docs/forex/getting-started
+    # Crypto - https://polygon.io/docs/crypto/getting-started
+
+
     soup = parse_html_document(url)
     remove_first_nav_element(soup)
     extract_and_save_main_nav(soup)
