@@ -335,7 +335,7 @@ def create_api_overview_markdown(html_dir, markdown_dir):
 
 def create_modular_reference(output_dir, sections):
     reference_md = "# Polygon.io API Modular Reference\n\n"
-    reference_md = "# Overview\n\n"
+    reference_md += "## Overview\n\n"
     reference_md += """
 Below you will find reference to all the endpoints available in the Polygon.io API. The reference is broken down into sections based on the asset type and the API type (REST or WebSocket).
 Each endpoint is documented in its own markdown file. 
