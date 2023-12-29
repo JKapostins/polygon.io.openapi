@@ -124,13 +124,15 @@ def create_websocket_api_overview_markdown():
             websocket_overview_md += f"##### {element.get_text().strip()}\n\n"
 
     # Write to markdown file
-    os.makedirs('output/markdown', exist_ok=True)
-    with open('output/markdown/websocket_api_overview.md', 'w') as file:
+    websocket_markdown_path = 'output/markdown/websocket'
+    os.makedirs(websocket_markdown_path, exist_ok=True)
+    with open(f'{websocket_markdown_path}/websocket_api_overview.md', 'w') as file:
         file.write(websocket_overview_md)
 
 def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
-    os.makedirs('output/markdown', exist_ok=True)
+    rest_markdown_path = 'output/markdown/rest'
+    os.makedirs(rest_markdown_path, exist_ok=True)
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
@@ -163,7 +165,7 @@ def find_anchors_and_corresponding_divs():
                 markdown += endpoint_response_attributes(endpoint_element)                
                 markdown += endpoint_response_object(endpoint_element)
                 markdown = markdown.replace('‘', '`').replace('’', '`')
-                with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
+                with open(f'{rest_markdown_path}/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
 
 
