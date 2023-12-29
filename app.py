@@ -343,21 +343,23 @@ def create_api_overview_markdown():
 
 
 if __name__ == '__main__':
-    url = 'https://polygon.io/docs/stocks/getting-started'
+    sections = ['stocks', 'options', 'indices', 'forex', 'crypto']
+    base_url = 'https://polygon.io/docs/{}/getting-started'
 
-    #TODO: Add support to loop through all api docs. Each set of documents should be stored in their respective folder (EX: output/stocks/html, output/stocks/markdown, output/options/html, output/options/markdown, etc.)
-    # Stocks - https://polygon.io/docs/stocks/getting-started
-    # Options - https://polygon.io/docs/options/getting-started
-    # Indices - https://polygon.io/docs/indices/getting-started
-    # Forex - https://polygon.io/docs/forex/getting-started
-    # Crypto - https://polygon.io/docs/crypto/getting-started
+    for section in sections:
+        url = base_url.format(section)
+        output_dir = f'output/{section}'
+        html_dir = f'{output_dir}/html'
+        markdown_dir = f'{output_dir}/markdown'
+        os.makedirs(html_dir, exist_ok=True)
+        os.makedirs(markdown_dir, exist_ok=True)
 
 
-    soup = parse_html_document(url)
-    remove_first_nav_element(soup)
-    extract_and_save_main_nav(soup)
-    extract_and_save_main_content(soup)
-    create_api_overview_markdown()
-    create_websocket_api_overview_markdown()
-    find_anchors_and_corresponding_divs()
+        soup = parse_html_document(url)
+        remove_first_nav_element(soup)
+        extract_and_save_main_nav(soup, html_dir)
+        extract_and_save_main_content(soup, html_dir)
+        create_api_overview_markdown(markdown_dir)
+        create_websocket_api_overview_markdown(markdown_dir)
+        find_anchors_and_corresponding_divs(html_dir, markdown_dir)
 
