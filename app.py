@@ -281,6 +281,24 @@ def create_api_overview_markdown():
                 break
             if sibling.name == 'p':
                 api_overview_md += f"{sibling.get_text().strip()}\n\n"
+    # Find the next h3 element after Authentication for the Usage section
+    usage = authentication.find_next('h3', text=re.compile('Usage')) if authentication else soup.find('h3', text=re.compile('Usage'))
+
+    if usage:
+        api_overview_md += f"## {usage.get_text().strip()}\n\n"
+        # ... existing code for extracting Usage section ...
+    else:
+        # If Usage section is not found, log an error or handle accordingly
+        print("Error: Usage section not found.")
+
+    # Extract the Response Types section
+    response_types = usage.find_next('h3', text=re.compile('Response Types')) if usage else None
+    if response_types:
+        api_overview_md += f"## {response_types.get_text().strip()}\n\n"
+        # ... existing code for extracting Response Types section ...
+    else:
+        # If Response Types section is not found, log an error or handle accordingly
+        print("Error: Response Types section not found.")
 
     # Write to markdown file
     os.makedirs('output/markdown', exist_ok=True)
