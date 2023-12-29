@@ -237,7 +237,55 @@ def endpoint_response_object(element):
                 
 
 def create_api_overview_markdown():
-    placeholder=0
+    with open('output/html/body.html', 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
+
+    # Initialize markdown content
+    api_overview_md = ""
+
+    # Extract the Introduction section
+    introduction = soup.find('h1')
+    if introduction:
+        api_overview_md += f"# {introduction.get_text().strip()}\n\n"
+
+    # Extract the Authentication section
+    authentication = soup.find('h3', text=re.compile('Authentication'))
+    if authentication:
+        api_overview_md += f"## {authentication.get_text().strip()}\n\n"
+        for sibling in authentication.find_next_siblings():
+            if sibling.name == 'h3':
+                break
+            if sibling.name == 'p':
+                api_overview_md += f"{sibling.get_text().strip()}\n\n"
+            if sibling.name == 'div' and 'Copy__TextWrapper-sc-71i6s4-1' in sibling.get('class', []):
+                api_key_example = sibling.find('span')
+                if api_key_example:
+                    api_overview_md += f"```\n{api_key_example.get_text().strip()}\n```\n\n"
+
+    # Extract the Usage section
+    usage = authentication.find_next_sibling('h3', text=re.compile('Usage'))
+    if usage:
+        api_overview_md += f"## {usage.get_text().strip()}\n\n"
+        for sibling in usage.find_next_siblings():
+            if sibling.name == 'h3':
+                break
+            if sibling.name == 'p':
+                api_overview_md += f"{sibling.get_text().strip()}\n\n"
+
+    # Extract the Response Types section
+    response_types = usage.find_next_sibling('h3', text=re.compile('Response Types'))
+    if response_types:
+        api_overview_md += f"## {response_types.get_text().strip()}\n\n"
+        for sibling in response_types.find_next_siblings():
+            if sibling.name == 'h3':
+                break
+            if sibling.name == 'p':
+                api_overview_md += f"{sibling.get_text().strip()}\n\n"
+
+    # Write to markdown file
+    os.makedirs('output/markdown', exist_ok=True)
+    with open('output/markdown/api_overview.md', 'w') as md_file:
+        md_file.write(api_overview_md)
     #TODO: This function should parse the body.html file and extract the documentation overview and write it to a markdown file.
     #The overview consists of 4 sections, Introduction, Authentication, Usage, and Response Types.
     #The Introduction section should be the first h1 element in the body.html file.
