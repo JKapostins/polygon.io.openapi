@@ -335,14 +335,16 @@ def create_api_overview_markdown(html_dir, markdown_dir):
 
 def create_modular_reference(output_dir, sections):
     reference_md = "# Polygon.io API Modular Reference\n\n"
+    reference_md = "# Overview\n\n"
+    reference_md += """
+Below you will find reference to all the endpoints available in the Polygon.io API. The reference is broken down into sections based on the asset type and the API type (REST or WebSocket).
+Each endpoint is documented in its own markdown file. 
+"""
     for section in sections:
         reference_md += f"## {section.capitalize()}\n"
         reference_md += "### REST API\n"
         rest_md_dir = f'{output_dir}/{section}/markdown/rest'
         rest_md_files = os.listdir(rest_md_dir)
-        for md_file in sorted(rest_md_files):
-        # Place the REST API overview file at the top
-            rest_md_files = sorted(rest_md_files, key=lambda x: (x != 'rest_api_overview.md', x))
         # Place the REST API overview file at the top
         rest_md_files = sorted(rest_md_files, key=lambda x: (x != 'rest_api_overview.md', x))
         for md_file in rest_md_files:
@@ -360,13 +362,7 @@ def create_modular_reference(output_dir, sections):
         websocket_md_dir = f'{output_dir}/{section}/markdown/websocket'
         websocket_md_files = os.listdir(websocket_md_dir)
         # Ensure the WebSocket API overview file is at the top
-        websocket_md_files.sort()
-        if 'websocket_api_overview.md' in websocket_md_files:
-            websocket_md_files.remove('websocket_api_overview.md')
-            websocket_md_files.insert(0, 'websocket_api_overview.md')
-        for md_file in websocket_md_files:
-
-        for md_file in sorted(websocket_md_files):
+        for md_file in sorted(websocket_md_files, key=lambda x: (x != 'websocket_api_overview.md', x)):
             if md_file.endswith('.md'):
                 with open(f'{websocket_md_dir}/{md_file}', 'r') as f:
                     first_line = f.readline().strip()
@@ -398,13 +394,13 @@ if __name__ == '__main__':
         os.makedirs(f'{markdown_dir}/websocket', exist_ok=True)
 
 
-        # soup = parse_html_document(url)
-        # remove_first_nav_element(soup)
-        # extract_and_save_main_nav(soup, html_dir)
-        # extract_and_save_main_content(soup, html_dir)
-        # create_api_overview_markdown(html_dir,markdown_dir)
-        # create_websocket_api_overview_markdown(html_dir, markdown_dir)
-        # find_anchors_and_corresponding_divs(html_dir, markdown_dir)
+        soup = parse_html_document(url)
+        remove_first_nav_element(soup)
+        extract_and_save_main_nav(soup, html_dir)
+        extract_and_save_main_content(soup, html_dir)
+        create_api_overview_markdown(html_dir,markdown_dir)
+        create_websocket_api_overview_markdown(html_dir, markdown_dir)
+        find_anchors_and_corresponding_divs(html_dir, markdown_dir)
     
     create_modular_reference('output', sections)
 
