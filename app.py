@@ -479,22 +479,23 @@ def create_api_overview_markdown():
             section = overview_section.find('h3', text=section_title)
             if section:
                 api_overview_md += f"### {section.get_text().strip()}\n\n"
-                next_p = section.find_next_sibling('p')
-                while next_p and next_p.name == 'p':
-                    api_overview_md += f"{next_p.get_text().strip()}\n\n"
-                    # Check for code blocks in the paragraph and wrap them with backticks
-                    if next_p:
-                        code_blocks = next_p.find_all('span', class_='Text__StyledText-sc-6aor3p-0')
+                # Find all paragraphs and code blocks within the section
+                content_elements = section.find_next_siblings(['p', 'div'], limit=2)
+                for element in content_elements:
+                    if element.name == 'p':
+                        api_overview_md += f"{element.get_text().strip()}\n\n"
+                    elif element.name == 'div' and 'Copy__Background-sc-71i6s4-0' in element.get('class', []):
+                        # Extract code blocks from the div
+                        code_blocks = element.find_all('span', class_='Text__StyledText-sc-6aor3p-0')
                         for code_block in code_blocks:
                             if 'kjHyPJ' in code_block.get('class', []):  # This class is used for inline code in the HTML
                                 code_text = code_block.get_text().strip()
                                 # Replace placeholder with YOUR_API_KEY_HERE
                                 if 'apiKey=*' in code_text:
                                     code_text = code_text.replace('apiKey=*', 'apiKey=YOUR_API_KEY_HERE')
-                                if 'Bearer <token>' in code_text:
-                                    code_text = code_text.replace('Bearer <token>', 'Bearer YOUR_API_KEY_HERE')
-                                api_overview_md = api_overview_md.replace(code_text, f"```\n{code_text}\n```")
-                    next_p = next_p.find_next_sibling('p') if next_p else None
+                                if '<token>' in code_text:
+                                    code_text = code_text.replace('<token>', 'YOUR_API_KEY_HERE')
+                                api_overview_md += f"```\n{code_text}\n```\n\n"
     os.makedirs('output/markdown', exist_ok=True)
     with open('output/markdown/api_overview.md', 'w') as file:
         file.write(api_overview_md)
