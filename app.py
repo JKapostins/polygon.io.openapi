@@ -97,9 +97,9 @@ def sanitize_filename(name):
 def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     os.makedirs('output/markdown', exist_ok=True)
-    with open('output/html/body.html', 'r') as file:
-        soup = BeautifulSoup(file.read(), 'html.parser')
+    soup = BeautifulSoup(open('output/html/body.html', 'r').read(), 'html.parser')
     anchors = soup.find_all('a')
+    api_overview_md = "# API Overview\n\n"
     for anchor in anchors:
         h2 = anchor.find('h2')
         endpoint_name = sanitize_filename(h2.text) if h2 else None
@@ -128,6 +128,12 @@ def find_anchors_and_corresponding_divs():
                 markdown = markdown.replace('‘', '`').replace('’', '`')
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
+                # Append endpoint information to the API overview markdown
+                api_overview_md += f"- [{endpoint_name}](markdown/{endpoint_file_name}.md)\n"
+
+    # Write the API overview markdown to a file
+    with open('output/markdown/api_overview.md', 'w') as file:
+        file.write(api_overview_md)
 
 
 def example_endpoint_request(element):
