@@ -327,8 +327,6 @@ if __name__ == '__main__':
     extract_and_save_main_nav(soup)
     extract_and_save_main_content(soup)
     create_api_overview_markdown()
+    find_anchors_and_corresponding_divs()
     create_endpoints_overview_markdown()
-    find_anchors_and_corresponding_divs()
-    create_api_overview_markdown()
-    find_anchors_and_corresponding_divs()
 
