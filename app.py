@@ -246,6 +246,9 @@ def create_api_overview_markdown():
     introduction = soup.find('h1')
     if introduction:
         api_overview_md += f"# {introduction.get_text().strip()}\n\n"
+        intro_paragraph = introduction.find_next_sibling('p', class_='text__IntroParagraph-sc-1lz0rk3-1 jgWzFC')
+        if intro_paragraph:
+            api_overview_md += f"{intro_paragraph.get_text().strip()}\n\n"
 
     # Extract the Authentication section
     authentication = soup.find('h3', text=re.compile('Authentication'))
