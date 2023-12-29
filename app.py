@@ -342,7 +342,7 @@ def create_modular_reference(output_dir, sections):
         rest_md_files = os.listdir(rest_md_dir)
         for md_file in sorted(rest_md_files):
         # Place the REST API overview file at the top
-        rest_md_files = sorted(rest_md_files, key=lambda x: (x != 'rest_api_overview.md', x))
+            rest_md_files = sorted(rest_md_files, key=lambda x: (x != 'rest_api_overview.md', x))
         for md_file in rest_md_files:
             if md_file.endswith('.md'):
                 with open(f'{rest_md_dir}/{md_file}', 'r') as f:
@@ -359,7 +359,7 @@ def create_modular_reference(output_dir, sections):
         websocket_md_files = os.listdir(websocket_md_dir)
         # Place the WebSocket API overview file at the top
         websocket_md_files = sorted(websocket_md_files, key=lambda x: (x != 'websocket_api_overview.md', x))
-        for md_file in websocket_md_files:
+
         for md_file in sorted(websocket_md_files):
             if md_file.endswith('.md'):
                 with open(f'{websocket_md_dir}/{md_file}', 'r') as f:
@@ -392,13 +392,13 @@ if __name__ == '__main__':
         os.makedirs(f'{markdown_dir}/websocket', exist_ok=True)
 
 
-        soup = parse_html_document(url)
-        remove_first_nav_element(soup)
-        extract_and_save_main_nav(soup, html_dir)
-        extract_and_save_main_content(soup, html_dir)
-        create_api_overview_markdown(html_dir,markdown_dir)
-        create_websocket_api_overview_markdown(html_dir, markdown_dir)
-        find_anchors_and_corresponding_divs(html_dir, markdown_dir)
+        # soup = parse_html_document(url)
+        # remove_first_nav_element(soup)
+        # extract_and_save_main_nav(soup, html_dir)
+        # extract_and_save_main_content(soup, html_dir)
+        # create_api_overview_markdown(html_dir,markdown_dir)
+        # create_websocket_api_overview_markdown(html_dir, markdown_dir)
+        # find_anchors_and_corresponding_divs(html_dir, markdown_dir)
     
     create_modular_reference('output', sections)
 
