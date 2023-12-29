@@ -95,12 +95,45 @@ def sanitize_filename(name):
     return sanitized_name
 
 def find_anchors_and_corresponding_divs():
+def create_websocket_api_overview_markdown():
+    with open('output/html/body.html', 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
+
+    websocket_section = soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0 ejmzQM')
+    if not websocket_section:
+        raise ValueError("WebSocket section not found in the HTML document.")
+
+    websocket_overview_md = ""
+
+    # Extract the WebSocket Documentation section
+    websocket_heading = websocket_section.find('h2', class_='Text__StyledText-sc-6aor3p-0 cCFnnL')
+    if websocket_heading:
+        websocket_overview_md += f"# {websocket_heading.get_text().strip()}\n\n"
+
+    # Extract the paragraphs and sections under the WebSocket Documentation
+    for element in websocket_section.find_all(['p', 'h3', 'pre'], recursive=False):
+        if element.name == 'p':
+            websocket_overview_md += f"{element.get_text().strip()}\n\n"
+        elif element.name == 'h3':
+            websocket_overview_md += f"## {element.get_text().strip()}\n\n"
+        elif element.name == 'pre':
+            websocket_overview_md += f"```\n{element.get_text().strip()}\n```\n\n"
+
+    # Write to markdown file
+    os.makedirs('output/markdown', exist_ok=True)
+    with open('output/markdown/websocket_api_overview.md', 'w') as file:
+        file.write(websocket_overview_md)
+
+def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     os.makedirs('output/markdown', exist_ok=True)
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
     for anchor in anchors:
+        # Skip the Stocks WebSocket Documentation section
+        if 'ws_getting-started' in anchor.get('href', ''):
+            continue
         h2 = anchor.find('h2')
         endpoint_name = sanitize_filename(h2.text) if h2 else None
         if endpoint_name:
@@ -662,5 +695,6 @@ if __name__ == '__main__':
     extract_and_save_main_nav(soup)
     extract_and_save_main_content(soup)
     create_api_overview_markdown()
+    create_websocket_api_overview_markdown()
     find_anchors_and_corresponding_divs()
 
