@@ -375,30 +375,7 @@ if __name__ == '__main__':
         create_api_overview_markdown(html_dir,markdown_dir)
         create_websocket_api_overview_markdown(html_dir, markdown_dir)
         find_anchors_and_corresponding_divs(html_dir, markdown_dir)
-        create_modular_reference(output_dir, sections)
-
-        #TODO: Create a modual_reference.md file that contains links to all the md files. The file should be structured such:
-        # # Polygon.io API Modular Reference
-        # ## Overview
-        # 
-        # ## Stocks
-        # ### Stocks REST API
-        # - [Overview](stocks/markdown/rest/rest_api_overview.md)
-        # - [Aggregates (Bars)](stocks/markdown/rest/aggregates_bars_endpoint.md)
-        # - etc...
-        # ### Stocks WebSocket API
-        # - [Overview](stocks/markdown/websocket/websocket_api_overview.md)
-        # - [Quotes](stocks/markdown/websocket/quotes_endpoint.md)
-        # - etc...
-        # ## Options
-        # ### Options REST API
-        # - [Overview](options/markdown/rest/rest_api_overview.md)
-        # - [Aggregates (Bars)](options/markdown/rest/aggregates_bars_endpoint.md)
-        # - etc...
-        # ### Options WebSocket API
-        # - [Overview](options/markdown/websocket/websocket_api_overview.md)
-        # - [Quotes](options/markdown/websocket/quotes_endpoint.md)
-        # - etc...
-        # ## etc...
+    
+    create_modular_reference('output', sections)
 
 
