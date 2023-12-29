@@ -33,19 +33,17 @@ def remove_first_nav_element(soup):
     if nav:
         nav.decompose()
 
-def extract_and_save_main_nav(soup):
+def extract_and_save_main_nav(soup, html_dir):
     nav = soup.find('nav')
     if nav:
-        os.makedirs('output/html', exist_ok=True)
-        with open('output/html/sidebar.html', 'w') as file:
+        with open(f'{html_dir}/sidebar.html', 'w') as file:
             file.write(str(nav))
         nav.decompose()
 
-def extract_and_save_main_content(soup):
+def extract_and_save_main_content(soup, html_dir):
     div = soup.find('div')
     if div:
-        os.makedirs('output/html', exist_ok=True)
-        with open('output/html/body.html', 'w') as file:
+        with open(f'{html_dir}/body.html', 'w') as file:
             file.write(str(div))
 
 
@@ -94,8 +92,8 @@ def sanitize_filename(name):
     sanitized_name = re.sub(r'_{2,}', '_', sanitized_name)  # Ensure only one underscore before '_endpoint'
     return sanitized_name
 
-def create_websocket_api_overview_markdown(markdown_dir):
-    with open(f'{markdown_dir}/../html/body.html', 'r') as file:
+def create_websocket_api_overview_markdown(html_dir, markdown_dir):
+    with open(f'{html_dir}/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
 
     websocket_section = soup.find('div', class_='Grid__Component-sc-h1tb5o-0 Grid__StyledGrid-sc-h1tb5o-1 eKoQMw hNiMUQ StyledSpacing-sc-wahrw5-0 bbSzhC StyledSpacing-sc-wahrw5-0 NOTdS')
@@ -124,17 +122,13 @@ def create_websocket_api_overview_markdown(markdown_dir):
             websocket_overview_md += f"##### {element.get_text().strip()}\n\n"
 
     # Write to markdown file
-    os.makedirs(markdown_dir, exist_ok=True)
-    with open(f'{markdown_dir}/websocket_api_overview.md', 'w') as file:
+    with open(f'{markdown_dir}/websocket/websocket_api_overview.md', 'w') as file:
         file.write(websocket_overview_md)
 
-def find_anchors_and_corresponding_divs():
-    os.makedirs('output/html', exist_ok=True)
-    rest_markdown_path = 'output/markdown/rest'
-    websocket_markdown_path = 'output/markdown/websocket'
-    os.makedirs(rest_markdown_path, exist_ok=True)
-    os.makedirs(websocket_markdown_path, exist_ok=True)
-    with open('output/html/body.html', 'r') as file:
+def find_anchors_and_corresponding_divs(html_dir, markdown_dir):
+    rest_markdown_path = f'{markdown_dir}/rest'
+    websocket_markdown_path = f'{markdown_dir}/websocket'
+    with open(f'{html_dir}/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
     for anchor in anchors:
@@ -154,7 +148,7 @@ def find_anchors_and_corresponding_divs():
                     break
             if endpoint_element:
                 endpoint_file_name = sanitize_filename(f"{endpoint_name}_endpoint")
-                with open(f'output/html/{endpoint_file_name}.html', 'w') as file:
+                with open(f'{html_dir}/{endpoint_file_name}.html', 'w') as file:
                     file.write(str(endpoint_element))
                 markdown = endpoint_heading(anchor)
                 markdown += endpoint_details(endpoint_element)
@@ -280,8 +274,8 @@ def endpoint_response_object(element):
     return response_object_md
                 
 
-def create_api_overview_markdown(markdown_dir):
-    with open(f'{markdown_dir}/../html/body.html', 'r') as file:
+def create_api_overview_markdown(html_dir, markdown_dir):
+    with open(f'{html_dir}/body.html', 'r') as file:
         full_soup = BeautifulSoup(file.read(), 'html.parser')
 
     # Extract the overview section from the full body
@@ -335,8 +329,7 @@ def create_api_overview_markdown(markdown_dir):
             api_overview_md += f"{response_description.get_text().strip()}\n\n"
 
     # Write to markdown file in the rest folder
-    os.makedirs(markdown_dir, exist_ok=True)
-    with open(f'{markdown_dir}/rest_api_overview.md', 'w') as file:
+    with open(f'{markdown_dir}/rest/rest_api_overview.md', 'w') as file:
         file.write(api_overview_md)
 
 
@@ -349,15 +342,19 @@ if __name__ == '__main__':
         output_dir = f'output/{section}'
         html_dir = f'{output_dir}/html'
         markdown_dir = f'{output_dir}/markdown'
+
+        #Ensure the directories are created.
         os.makedirs(html_dir, exist_ok=True)
         os.makedirs(markdown_dir, exist_ok=True)
+        os.makedirs(f'{markdown_dir}/rest', exist_ok=True)
+        os.makedirs(f'{markdown_dir}/websocket', exist_ok=True)
 
 
         soup = parse_html_document(url)
         remove_first_nav_element(soup)
         extract_and_save_main_nav(soup, html_dir)
         extract_and_save_main_content(soup, html_dir)
-        create_api_overview_markdown(markdown_dir)
-        create_websocket_api_overview_markdown(markdown_dir)
+        create_api_overview_markdown(html_dir,markdown_dir)
+        create_websocket_api_overview_markdown(html_dir, markdown_dir)
         find_anchors_and_corresponding_divs(html_dir, markdown_dir)
 
