@@ -98,6 +98,7 @@ def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     os.makedirs('output/markdown', exist_ok=True)
     overview_md = "# API Overview\n\n## Overview\n\n- [Overview](api_overview.md)\n\n# Endpoints\n\n"
+    overview_md = "# API Overview\n\n## Overview\n\n- [Overview](api_overview.md)\n\n# Endpoints\n\n"
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
@@ -323,6 +324,14 @@ def create_endpoints_overview_markdown():
     os.makedirs('output/markdown', exist_ok=True)
     with open('output/markdown/endpoints_overview.md', 'w') as file:
         file.write(overview_md + endpoints_md)
+                with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
+                    file.write(markdown)
+                # Append the endpoint to the overview markdown
+                overview_md += f"- [{endpoint_name}](markdown/{endpoint_file_name}.md)\n"
+
+    # Write the overview markdown to file
+    with open('output/markdown/endpoints_overview.md', 'w') as file:
+        file.write(overview_md)
 
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
@@ -332,5 +341,4 @@ if __name__ == '__main__':
     extract_and_save_main_content(soup)
     create_api_overview_markdown()
     find_anchors_and_corresponding_divs()
-    create_endpoints_overview_markdown()
 
