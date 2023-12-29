@@ -97,8 +97,6 @@ def sanitize_filename(name):
 def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     os.makedirs('output/markdown', exist_ok=True)
-    overview_md = "# API Overview\n\n## Overview\n\n- [Overview](api_overview.md)\n\n# Endpoints\n\n"
-    overview_md = "# API Overview\n\n## Overview\n\n- [Overview](api_overview.md)\n\n# Endpoints\n\n"
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
@@ -296,42 +294,6 @@ def create_api_overview_markdown():
     os.makedirs('output/markdown', exist_ok=True)
     with open('output/markdown/api_overview.md', 'w') as file:
         file.write(api_overview_md)
-
-def create_endpoints_overview_markdown():
-    with open('output/html/body.html', 'r') as file:
-        soup = BeautifulSoup(file.read(), 'html.parser')
-
-    overview_md = "# API Overview\n\n"
-    endpoints_md = "# Endpoints\n\n"
-
-    # Extract the overview section
-    overview_section = soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0')
-    if overview_section:
-        overview_md += "## Overview\n\n"
-        overview_md += "- [Overview](api_overview.md)\n\n"
-
-    # Extract the endpoints
-    anchors = soup.find_all('a', class_='ScrollTargetLink__Anchor-sc-yy6ew6-0')
-    for anchor in anchors:
-        h2_element = anchor.find('h2')
-        if h2_element is None:
-            continue
-        endpoint_name = h2_element.get_text().strip()
-        endpoint_file_name = sanitize_filename(f"{endpoint_name}_endpoint")
-        endpoints_md += f"- [{endpoint_name}](markdown/{endpoint_file_name}.md)\n"
-
-    # Write to markdown file
-    os.makedirs('output/markdown', exist_ok=True)
-    with open('output/markdown/endpoints_overview.md', 'w') as file:
-        file.write(overview_md + endpoints_md)
-                with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
-                    file.write(markdown)
-                # Append the endpoint to the overview markdown
-                overview_md += f"- [{endpoint_name}](markdown/{endpoint_file_name}.md)\n"
-
-    # Write the overview markdown to file
-    with open('output/markdown/endpoints_overview.md', 'w') as file:
-        file.write(overview_md)
 
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
