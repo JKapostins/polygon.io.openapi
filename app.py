@@ -94,8 +94,8 @@ def sanitize_filename(name):
     sanitized_name = re.sub(r'_{2,}', '_', sanitized_name)  # Ensure only one underscore before '_endpoint'
     return sanitized_name
 
-def create_websocket_api_overview_markdown():
-    with open('output/html/body.html', 'r') as file:
+def create_websocket_api_overview_markdown(markdown_dir):
+    with open(f'{markdown_dir}/../html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
 
     websocket_section = soup.find('div', class_='Grid__Component-sc-h1tb5o-0 Grid__StyledGrid-sc-h1tb5o-1 eKoQMw hNiMUQ StyledSpacing-sc-wahrw5-0 bbSzhC StyledSpacing-sc-wahrw5-0 NOTdS')
@@ -124,9 +124,8 @@ def create_websocket_api_overview_markdown():
             websocket_overview_md += f"##### {element.get_text().strip()}\n\n"
 
     # Write to markdown file
-    websocket_markdown_path = 'output/markdown/websocket'
-    os.makedirs(websocket_markdown_path, exist_ok=True)
-    with open(f'{websocket_markdown_path}/websocket_api_overview.md', 'w') as file:
+    os.makedirs(markdown_dir, exist_ok=True)
+    with open(f'{markdown_dir}/websocket_api_overview.md', 'w') as file:
         file.write(websocket_overview_md)
 
 def find_anchors_and_corresponding_divs():
@@ -281,8 +280,8 @@ def endpoint_response_object(element):
     return response_object_md
                 
 
-def create_api_overview_markdown():
-    with open('output/html/body.html', 'r') as file:
+def create_api_overview_markdown(markdown_dir):
+    with open(f'{markdown_dir}/../html/body.html', 'r') as file:
         full_soup = BeautifulSoup(file.read(), 'html.parser')
 
     # Extract the overview section from the full body
@@ -336,9 +335,8 @@ def create_api_overview_markdown():
             api_overview_md += f"{response_description.get_text().strip()}\n\n"
 
     # Write to markdown file in the rest folder
-    rest_markdown_path = 'output/markdown/rest'
-    os.makedirs(rest_markdown_path, exist_ok=True)
-    with open(f'{rest_markdown_path}/rest_api_overview.md', 'w') as file:
+    os.makedirs(markdown_dir, exist_ok=True)
+    with open(f'{markdown_dir}/rest_api_overview.md', 'w') as file:
         file.write(api_overview_md)
 
 
