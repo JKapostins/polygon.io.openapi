@@ -97,9 +97,9 @@ def sanitize_filename(name):
 def find_anchors_and_corresponding_divs():
     os.makedirs('output/html', exist_ok=True)
     os.makedirs('output/markdown', exist_ok=True)
-    soup = BeautifulSoup(open('output/html/body.html', 'r').read(), 'html.parser')
+    with open('output/html/body.html', 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
     anchors = soup.find_all('a')
-    api_overview_md = "# API Overview\n\n"
     for anchor in anchors:
         h2 = anchor.find('h2')
         endpoint_name = sanitize_filename(h2.text) if h2 else None
@@ -128,12 +128,6 @@ def find_anchors_and_corresponding_divs():
                 markdown = markdown.replace('‘', '`').replace('’', '`')
                 with open(f'output/markdown/{endpoint_file_name}.md', 'w') as file:
                     file.write(markdown)
-                # Append endpoint information to the API overview markdown
-                api_overview_md += f"- [{endpoint_name}](markdown/{endpoint_file_name}.md)\n"
-
-    # Write the API overview markdown to a file
-    with open('output/markdown/api_overview.md', 'w') as file:
-        file.write(api_overview_md)
 
 
 def example_endpoint_request(element):
@@ -142,7 +136,7 @@ def example_endpoint_request(element):
     text_wrapper = element.find('div', class_='Copy__TextWrapper-sc-71i6s4-1 bsrJTO')
     if text_wrapper:
         request_url = text_wrapper.get_text().strip()
-        example_request_md += f"```\n{request_url}\n```\n"
+        example_request_md += f"```\n{request_url.replace('*', '{POLYGON_API_KEY}')}\n```\n"
     return example_request_md
 
 
@@ -301,6 +295,366 @@ def create_api_overview_markdown():
     with open('output/markdown/api_overview.md', 'w') as file:
         file.write(api_overview_md)
 
+#TODO: The Stocks WebSocket Documentation in the body.html is a special case. this is similar to the api_overview (which was the overview for the rest api). The WEBSOCKET_OVERVIEW is the overview for the websocket api. We should skip this section when parsing endpoints, and call a special case function that writes a websocket_api_overview.md file.
+# <div 
+#                             class="Grid__Component-sc-h1tb5o-0 Grid__StyledGrid-sc-h1tb5o-1 eKoQMw hNiMUQ StyledSpacing-sc-wahrw5-0 bbSzhC StyledSpacing-sc-wahrw5-0 NOTdS">
+#                             <div class="GridItem__StyledGridItem-sc-1xj2soh-0 fUyjCB">
+#                                 <div class="ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0 ejmzQM">
+#                                     <div class="ScrollTrackedSection__ScrollTarget-sc-1r3wlr6-1 fUpGgT" offset="-100">
+#                                     </div>
+#                                     <div><a class="ScrollTargetLink__Anchor-sc-yy6ew6-0 iCcuRo"
+#                                             href="https://polygon.io/docs/stocks/ws_getting-started" role="button"
+#                                             tabindex="0" type="button">
+#                                             <h2 class="Text__StyledText-sc-6aor3p-0 cCFnnL Typography__StyledText-sc-102sqjl-0 gHCXHz StyledSpacing-sc-wahrw5-0 dsgUMc"
+#                                                 color="primary" size="7">Stocks<!-- --> WebSocket Documentation</h2>
+#                                         </a>
+#                                         <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 jgWzFC"
+#                                             color="primary" size="4">
+#                                             The Polygon.io Stocks WebSocket API provides streaming access to the latest
+#                                             stock market data from all US stock exchanges.
+#                                             <!-- --> You can specify which channels you want to consume by sending
+#                                             instructions in the form of actions. Our WebSockets emit events to notify
+#                                             you when an event has occurred in a channel you've subscribed to.
+#                                         </p>
+#                                         <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 czACEG"
+#                                             color="primary" size="4">Our WebSocket APIs are based on entitlements that
+#                                             control which WebSocket Clusters you can connect to and which kinds of data
+#                                             you can access.<!-- --> <!-- -->You can<!-- --> <a
+#                                                 class="Link__StyledLink-sc-wnesr1-0 hWpRys InlineLink-sc-163zztk-0 fBowrm sc-bcXHqe dLFWrP"
+#                                                 href="https://polygon.io/dashboard/login" size="5"><span
+#                                                     class="Text__StyledText-sc-6aor3p-0 jugoJw" color="inherit"
+#                                                     size="4">login</span></a> <!-- -->to see examples that include your
+#                                             API key and are personalized to your entitlements.</p>
+#                                         <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
+#                                             <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
+#                                                 color="primary" size="6">Step 1: Connect</h3>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 jgWzFC"
+#                                                 color="primary" size="4">With a premium <!-- -->Stocks<!-- --> plan, you
+#                                                 will be able to use a single connection to the <!-- -->Stocks<!-- -->
+#                                                 Cluster. If another connection attempts to connect to the
+#                                                 <!-- -->Stocks<!-- --> Cluster simultaneously, the current connection
+#                                                 will be disconnected.<!-- --> <!-- -->If you need more simultaneous
+#                                                 connections to this cluster, you can<!-- --> <a
+#                                                     class="Link__StyledLink-sc-wnesr1-0 cfajpz InlineLink-sc-163zztk-0 connect__IntercomLink-sc-uupnd8-0 fBowrm jhMIMj"
+#                                                     size="1">contact support</a>.</p>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">Connecting to a cluster:</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
+#                                                 <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 fODFXk"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
+#                                                             order="0">
+#                                                             <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
+#                                                                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                                                         class="Text__StyledText-sc-6aor3p-0 zZEZj"
+#                                                                         color="gray"
+#                                                                         size="1">Delayed:</span></span><span
+#                                                                     class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
+#                                                                     color="inherit" height="1.3" size="2">wscat -c
+#                                                                     wss://delayed.polygon.io/stocks</span></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0"><button
+#                                                                 class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
+#                                                                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
+#                                                                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
+#                                                         </div>
+#                                                     </div>
+#                                                 </div>
+#                                             </div>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
+#                                                 <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 fODFXk"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
+#                                                             order="0">
+#                                                             <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
+#                                                                     class="StyledSpacing-sc-wahrw5-0 fUSYAk"><span
+#                                                                         class="Text__StyledText-sc-6aor3p-0 zZEZj"
+#                                                                         color="gray"
+#                                                                         size="1">Real-time:</span></span><span
+#                                                                     class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
+#                                                                     color="inherit" height="1.3" size="2">wscat -c
+#                                                                     wss://socket.polygon.io/stocks</span></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0"><button
+#                                                                 class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
+#                                                                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
+#                                                                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
+#                                                         </div>
+#                                                     </div>
+#                                                 </div>
+#                                             </div>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">On connection you will receive the following
+#                                                 message:</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 iTMjvM">
+#                                                 <pre class="CodeBlock__StyledHighlighter-sc-14zdm7l-0 dEqsNg"
+#                                                     style="display:block;overflow-x:auto;padding:0.5em;color:#383a42;background:#fafafa"><code class="language-json" style="white-space:pre"><span>[{
+# </span><span>	</span><span style="color:#986801">"ev"</span><span>:</span><span style="color:#50a14f">"status"</span><span>,
+# </span><span>	</span><span style="color:#986801">"status"</span><span>:</span><span style="color:#50a14f">"connected"</span><span>,
+# </span><span>	</span><span style="color:#986801">"message"</span><span>: </span><span style="color:#50a14f">"Connected Successfully"</span><span>
+# </span>}]</code></pre>
+#                                             </div>
+#                                         </section>
+#                                         <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
+#                                             <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
+#                                                 color="primary" size="6">Step 2: Authenticate</h3>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">You must authenticate before you can make any
+#                                                 other requests.</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
+#                                                 <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 fODFXk"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
+#                                                             order="0">
+#                                                             <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
+#                                                                     class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
+#                                                                     color="inherit" height="1.3"
+#                                                                     size="2">{"action":"auth","params":"********"}</span>
+#                                                             </div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0"><button
+#                                                                 class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
+#                                                                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
+#                                                                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
+#                                                         </div>
+#                                                     </div>
+#                                                 </div>
+#                                             </div>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">On successful authentication you will receive
+#                                                 the following message:</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 iTMjvM">
+#                                                 <pre class="CodeBlock__StyledHighlighter-sc-14zdm7l-0 dEqsNg"
+#                                                     style="display:block;overflow-x:auto;padding:0.5em;color:#383a42;background:#fafafa"><code class="language-json" style="white-space:pre"><span>[{
+# </span><span>	</span><span style="color:#986801">"ev"</span><span>:</span><span style="color:#50a14f">"status"</span><span>,
+# </span><span>	</span><span style="color:#986801">"status"</span><span>:</span><span style="color:#50a14f">"auth_success"</span><span>,
+# </span><span>	</span><span style="color:#986801">"message"</span><span>: </span><span style="color:#50a14f">"authenticated"</span><span>
+# </span>}]</code></pre>
+#                                             </div>
+#                                         </section>
+#                                         <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
+#                                             <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
+#                                                 color="primary" size="6">Step 3: Subscribe</h3>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">Once authenticated, you can request a stream.
+#                                                 You can request multiple streams in the same request.</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
+#                                                 <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 fODFXk"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
+#                                                             order="0">
+#                                                             <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
+#                                                                     class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
+#                                                                     color="inherit" height="1.3"
+#                                                                     size="2">{"action":"subscribe","params":"AM.LPL"}</span>
+#                                                             </div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0"><button
+#                                                                 class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
+#                                                                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
+#                                                                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
+#                                                         </div>
+#                                                     </div>
+#                                                 </div>
+#                                             </div>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">You can also request multiple streams from the
+#                                                 same cluster.</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 iTMjvM">
+#                                                 <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 fODFXk"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
+#                                                             order="0">
+#                                                             <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
+#                                                                     class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
+#                                                                     color="inherit" height="1.3"
+#                                                                     size="2">{"action":"subscribe","params":"AM.LPL,AM.MSFT"}</span>
+#                                                             </div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0"><button
+#                                                                 class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
+#                                                                     class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
+#                                                                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
+#                                                         </div>
+#                                                     </div>
+#                                                 </div>
+#                                             </div>
+#                                         </section>
+#                                         <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
+#                                             <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
+#                                                 color="primary" size="6">Usage</h3>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">Things happen very quickly in the world of
+#                                                 finance, which means a Polygon.io WebSocket client must be able to
+#                                                 handle many incoming messages per second. Due to the nature of the
+#                                                 WebSocket protocol, if a client is slow to consume messages from the
+#                                                 server, Polygon.io's server must buffer messages and send them only as
+#                                                 fast as the client can consume them. To help prevent the message buffer
+#                                                 from getting too long, Polygon.io may send more than one JSON object in
+#                                                 a single WebSocket message. We accomplish this by wrapping all messages
+#                                                 in a JSON array, and adding more objects to the array if the message
+#                                                 buffer is getting longer. For example, consider a WebSocket message with
+#                                                 a single trade event in it:</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
+#                                                 <pre class="CodeBlock__StyledHighlighter-sc-14zdm7l-0 dEqsNg"
+#                                                     style="display:block;overflow-x:auto;padding:0.5em;color:#383a42;background:#fafafa"><code class="language-json" style="white-space:pre"><span>[
+# </span><span>    {</span><span style="color:#986801">"ev"</span><span>:</span><span style="color:#50a14f">"T"</span><span>,</span><span style="color:#986801">"sym"</span><span>:</span><span style="color:#50a14f">"MSFT"</span><span>,</span><span style="color:#986801">"i"</span><span>:</span><span style="color:#50a14f">"50578"</span><span>,</span><span style="color:#986801">"x"</span><span>:</span><span style="color:#986801">4</span><span>,</span><span style="color:#986801">"p"</span><span>:</span><span style="color:#986801">215.9721</span><span>,</span><span style="color:#986801">"s"</span><span>:</span><span style="color:#986801">100</span><span>,</span><span style="color:#986801">"t"</span><span>:</span><span style="color:#986801">1611082428813</span><span>,</span><span style="color:#986801">"z"</span><span>:</span><span style="color:#986801">3</span><span>}
+# </span>]</code></pre>
+#                                             </div>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
+#                                                 color="primary" size="4">If your client is consuming a bit slow, or 2+
+#                                                 events happened in very short succession, you may receive a single
+#                                                 WebSocket message with more than one event inside it, like this:</p>
+#                                             <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
+#                                                 <pre class="CodeBlock__StyledHighlighter-sc-14zdm7l-0 dEqsNg"
+#                                                     style="display:block;overflow-x:auto;padding:0.5em;color:#383a42;background:#fafafa"><code class="language-json" style="white-space:pre"><span>[
+# </span><span>    {</span><span style="color:#986801">"ev"</span><span>:</span><span style="color:#50a14f">"T"</span><span>,</span><span style="color:#986801">"sym"</span><span>:</span><span style="color:#50a14f">"MSFT"</span><span>,</span><span style="color:#986801">"i"</span><span>:</span><span style="color:#50a14f">"50578"</span><span>,</span><span style="color:#986801">"x"</span><span>:</span><span style="color:#986801">4</span><span>,</span><span style="color:#986801">"p"</span><span>:</span><span style="color:#986801">215.9721</span><span>,</span><span style="color:#986801">"s"</span><span>:</span><span style="color:#986801">100</span><span>,</span><span style="color:#986801">"t"</span><span>:</span><span style="color:#986801">1611082428813</span><span>,</span><span style="color:#986801">"z"</span><span>:</span><span style="color:#986801">3</span><span>}, 
+# </span><span>    {</span><span style="color:#986801">"ev"</span><span>:</span><span style="color:#50a14f">"T"</span><span>,</span><span style="color:#986801">"sym"</span><span>:</span><span style="color:#50a14f">"MSFT"</span><span>,</span><span style="color:#986801">"i"</span><span>:</span><span style="color:#50a14f">"12856"</span><span>,</span><span style="color:#986801">"x"</span><span>:</span><span style="color:#986801">4</span><span>,</span><span style="color:#986801">"p"</span><span>:</span><span style="color:#986801">215.989</span><span>,</span><span style="color:#986801">"s"</span><span>:</span><span style="color:#986801">1</span><span>,</span><span style="color:#986801">"c"</span><span>:[</span><span style="color:#986801">37</span><span>],</span><span style="color:#986801">"t"</span><span>:</span><span style="color:#986801">1611082428814</span><span>,</span><span style="color:#986801">"z"</span><span>:</span><span style="color:#986801">3</span><span>}
+# </span>]</code></pre>
+#                                             </div>
+#                                             <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 czACEG"
+#                                                 color="primary" size="4">Note that if a client is consuming messages too
+#                                                 slowly for too long, Polygon.io's server-side buffer may get too large.
+#                                                 If that happens, Polygon.io will terminate the WebSocket connection. You
+#                                                 can check your<!-- --> <a
+#                                                     class="Link__StyledLink-sc-wnesr1-0 cfajpz InlineLink-sc-163zztk-0 fBowrm sc-bcXHqe dLFWrP"
+#                                                     href="https://polygon.io/dashboard/connections" size="1">account
+#                                                     dashboard</a> <!-- -->to see if a connection was terminated as a
+#                                                 slow consumer. If this happens to you consistently, consider subscribing
+#                                                 to fewer symbols or channels.</p>
+#                                         </section>
+#                                     </div>
+#                                 </div>
+#                             </div>
+#                             <div class="GridItem__StyledGridItem-sc-1xj2soh-0 jHuWkP">
+#                                 <div class="Grid__Component-sc-h1tb5o-0 Grid__StyledGrid-sc-h1tb5o-1 jkEOHr hNiMUQ">
+#                                     <div class="GridItem__StyledGridItem-sc-1xj2soh-0 isWvay"></div>
+#                                     <div class="GridItem__StyledGridItem-sc-1xj2soh-0 Mqtlr">
+#                                         <div class="StyledSpacing-sc-wahrw5-0 doupJv">
+#                                             <div class="StyledSpacing-sc-wahrw5-0 hKvqOb">
+#                                                 <div class="Text__StyledText-sc-6aor3p-0 iGHfaJ SubsectionLabel__StyledLabel-sc-ynvayg-0 kgOCfx"
+#                                                     color="secondary" size="3">Client Libraries</div>
+#                                             </div>
+#                                             <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
+#                                                     href="https://github.com/polygon-io/client-python"
+#                                                     rel="nofollow noreferrer" target="_blank">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div
+#                                                                 class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
+#                                                                 <img alt="Python Logo" height="20"
+#                                                                     src="/docs/icons/python.svg" width="24" /></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
+#                                                                 color="primary" size="3">Python</div>
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
+#                                                                 color="secondary" size="3">client-python</div>
+#                                                         </div>
+#                                                     </div>
+#                                                 </a></div>
+#                                             <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
+#                                                     href="https://github.com/polygon-io/client-go"
+#                                                     rel="nofollow noreferrer" target="_blank">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div
+#                                                                 class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
+#                                                                 <img alt="Go Logo" height="12" src="/docs/icons/go.svg"
+#                                                                     width="32" /></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
+#                                                                 color="primary" size="3">Go</div>
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
+#                                                                 color="secondary" size="3">client-go</div>
+#                                                         </div>
+#                                                     </div>
+#                                                 </a></div>
+#                                             <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
+#                                                     href="https://github.com/polygon-io/client-js"
+#                                                     rel="nofollow noreferrer" target="_blank">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div
+#                                                                 class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
+#                                                                 <img alt="Javascript Logo" height="24"
+#                                                                     src="/docs/icons/javascript.svg" width="24" /></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
+#                                                                 color="primary" size="3">Javascript</div>
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
+#                                                                 color="secondary" size="3">client-js</div>
+#                                                         </div>
+#                                                     </div>
+#                                                 </a></div>
+#                                             <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
+#                                                     href="https://github.com/polygon-io/client-php"
+#                                                     rel="nofollow noreferrer" target="_blank">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div
+#                                                                 class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
+#                                                                 <img alt="PHP Logo" height="16"
+#                                                                     src="/docs/icons/php.svg" width="31" /></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
+#                                                                 color="primary" size="3">PHP</div>
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
+#                                                                 color="secondary" size="3">client-php</div>
+#                                                         </div>
+#                                                     </div>
+#                                                 </a></div>
+#                                             <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
+#                                                     href="https://github.com/polygon-io/client-jvm"
+#                                                     rel="nofollow noreferrer" target="_blank">
+#                                                     <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
+#                                                         spacing="0">
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div
+#                                                                 class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
+#                                                                 <img alt="Kotlin Logo" height="24"
+#                                                                     src="/docs/icons/kotlin.svg" width="24" /></div>
+#                                                         </div>
+#                                                         <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
+#                                                             order="0">
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
+#                                                                 color="primary" size="3">Kotlin</div>
+#                                                             <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
+#                                                                 color="secondary" size="3">client-jvm</div>
+#                                                         </div>
+#                                                     </div>
+#                                                 </a></div>
+#                                         </div>
+#                                     </div>
+#                                 </div>
+#                             </div>
+#                         </div>
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
     soup = parse_html_document(url)
