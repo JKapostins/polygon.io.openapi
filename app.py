@@ -335,9 +335,10 @@ def create_api_overview_markdown():
         if response_description:
             api_overview_md += f"{response_description.get_text().strip()}\n\n"
 
-    # Write to markdown file
-    os.makedirs('output/markdown', exist_ok=True)
-    with open('output/markdown/rest_api_overview.md', 'w') as file:
+    # Write to markdown file in the rest folder
+    rest_markdown_path = 'output/markdown/rest'
+    os.makedirs(rest_markdown_path, exist_ok=True)
+    with open(f'{rest_markdown_path}/rest_api_overview.md', 'w') as file:
         file.write(api_overview_md)
 
 
