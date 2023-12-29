@@ -238,12 +238,17 @@ def endpoint_response_object(element):
 
 def create_api_overview_markdown():
     with open('output/html/body.html', 'r') as file:
-        soup = BeautifulSoup(file.read(), 'html.parser')
+        full_soup = BeautifulSoup(file.read(), 'html.parser')
+
+    # Extract the overview section from the full body
+    overview_section = full_soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0')
+    if not overview_section:
+        raise ValueError("Overview section not found in the HTML document.")
 
     api_overview_md = ""
 
     # Extract the Introduction section
-    introduction = soup.find('h1')
+    introduction = overview_section.find('h1')
     if introduction:
         api_overview_md += f"# {introduction.get_text().strip()}\n\n"
         intro_paragraph = introduction.find_next_sibling('p', class_='text__IntroParagraph-sc-1lz0rk3-1 jgWzFC')
@@ -251,7 +256,7 @@ def create_api_overview_markdown():
             api_overview_md += f"{intro_paragraph.get_text().strip()}\n\n"
 
     # Extract the Authentication section
-    authentication = soup.find('h3', text=re.compile('Authentication'))
+    authentication = overview_section.find('h3', text=re.compile('Authentication'))
     if authentication:
         api_overview_md += f"## {authentication.get_text().strip()}\n\n"
         auth_description = authentication.find_next_sibling('p')
@@ -263,7 +268,7 @@ def create_api_overview_markdown():
             api_overview_md += f"```\n{code}\n```\n\n"
 
     # Extract the Usage section
-    usage = soup.find('h3', text=re.compile('Usage'))
+    usage = overview_section.find('h3', text=re.compile('Usage'))
     if usage:
         api_overview_md += f"## {usage.get_text().strip()}\n\n"
         usage_description = usage.find_next_sibling('p')
@@ -271,7 +276,7 @@ def create_api_overview_markdown():
             api_overview_md += f"{usage_description.get_text().strip()}\n\n"
 
     # Extract the Response Types section
-    response_types = soup.find('h3', text=re.compile('Response Types'))
+    response_types = overview_section.find('h3', text=re.compile('Response Types'))
     if response_types:
         api_overview_md += f"## {response_types.get_text().strip()}\n\n"
         response_description = response_types.find_next_sibling('p')
