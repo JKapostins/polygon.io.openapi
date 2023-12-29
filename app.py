@@ -237,7 +237,48 @@ def endpoint_response_object(element):
                 
 
 def create_api_overview_markdown():
-    placeholder=0
+    with open('output/html/body.html', 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
+
+    api_overview_md = ""
+
+    # Extract the Introduction section
+    introduction = soup.find('h1')
+    if introduction:
+        api_overview_md += f"# {introduction.get_text().strip()}\n\n"
+
+    # Extract the Authentication section
+    authentication = soup.find('h3', text=re.compile('Authentication'))
+    if authentication:
+        api_overview_md += f"## {authentication.get_text().strip()}\n\n"
+        auth_description = authentication.find_next_sibling('p')
+        if auth_description:
+            api_overview_md += f"{auth_description.get_text().strip()}\n\n"
+        auth_code_examples = authentication.find_next_siblings('div', class_='Copy__Background-sc-71i6s4-0')
+        for example in auth_code_examples:
+            code = example.find('span').get_text().strip()
+            api_overview_md += f"```\n{code}\n```\n\n"
+
+    # Extract the Usage section
+    usage = soup.find('h3', text=re.compile('Usage'))
+    if usage:
+        api_overview_md += f"## {usage.get_text().strip()}\n\n"
+        usage_description = usage.find_next_sibling('p')
+        if usage_description:
+            api_overview_md += f"{usage_description.get_text().strip()}\n\n"
+
+    # Extract the Response Types section
+    response_types = soup.find('h3', text=re.compile('Response Types'))
+    if response_types:
+        api_overview_md += f"## {response_types.get_text().strip()}\n\n"
+        response_description = response_types.find_next_sibling('p')
+        if response_description:
+            api_overview_md += f"{response_description.get_text().strip()}\n\n"
+
+    # Write to markdown file
+    os.makedirs('output/markdown', exist_ok=True)
+    with open('output/markdown/api_overview.md', 'w') as file:
+        file.write(api_overview_md)
     #TODO: This function should parse the body.html file and extract the documentation overview and write it to a markdown file.
     #The overview consists of 4 sections, Introduction, Authentication, Usage, and Response Types.
     #The Introduction section should be the first h1 element in the body.html file.
