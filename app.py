@@ -250,27 +250,34 @@ def create_api_overview_markdown():
     # Extract the Introduction section
     introduction = overview_section.find('h1')
     if introduction:
-        api_overview_md += f"# {introduction.get_text().strip()}\n\n"
-        intro_paragraph = introduction.find_next_sibling('p', class_='text__IntroParagraph-sc-1lz0rk3-1 jgWzFC')
+        api_overview_md += f"## {introduction.get_text().strip()}\n\n"
+        intro_paragraph = overview_section.find('p', class_=['text__IntroParagraph-sc-1lz0rk3-1', 'jgWzFC'])
         if intro_paragraph:
             api_overview_md += f"{intro_paragraph.get_text().strip()}\n\n"
 
     # Extract the Authentication section
     authentication = overview_section.find('h3', text=re.compile('Authentication'))
     if authentication:
-        api_overview_md += f"## {authentication.get_text().strip()}\n\n"
-        auth_description = authentication.find_next_sibling('p')
-        if auth_description:
-            api_overview_md += f"{auth_description.get_text().strip()}\n\n"
-        auth_code_examples = authentication.find_next_siblings('div', class_='Copy__Background-sc-71i6s4-0')
-        for example in auth_code_examples:
-            code = example.find('span').get_text().strip()
-            api_overview_md += f"```\n{code}\n```\n\n"
+        api_overview_md += f"### {authentication.get_text().strip()}\n\n"
+        query_string_description = authentication.find_next_sibling('p')
+        bearer_description = query_string_description.find_next_sibling('p')
+        if query_string_description:
+            api_overview_md += f"{query_string_description.get_text().strip()}\n\n"
+
+        code_sections = authentication.find_all_next('span', class_=['Text__StyledText-sc-6aor3p-0','kjHyPJ'])
+        if code_sections:
+            api_overview_md += f"```\n{code_sections[0].get_text().strip().replace('*', '{POLYGON_API_KEY}')}\n```\n\n"
+        
+        if(bearer_description):
+            api_overview_md += f"{bearer_description.get_text().strip()}\n\n"
+
+        if code_sections and len(code_sections) >= 2:
+            api_overview_md += f"```\n{code_sections[1].get_text().strip().replace('<token>', '{POLYGON_API_KEY}')}\n```\n\n"
 
     # Extract the Usage section
     usage = overview_section.find('h3', text=re.compile('Usage'))
     if usage:
-        api_overview_md += f"## {usage.get_text().strip()}\n\n"
+        api_overview_md += f"### {usage.get_text().strip()}\n\n"
         usage_description = usage.find_next_sibling('p')
         if usage_description:
             api_overview_md += f"{usage_description.get_text().strip()}\n\n"
@@ -278,7 +285,7 @@ def create_api_overview_markdown():
     # Extract the Response Types section
     response_types = overview_section.find('h3', text=re.compile('Response Types'))
     if response_types:
-        api_overview_md += f"## {response_types.get_text().strip()}\n\n"
+        api_overview_md += f"### {response_types.get_text().strip()}\n\n"
         response_description = response_types.find_next_sibling('p')
         if response_description:
             api_overview_md += f"{response_description.get_text().strip()}\n\n"
@@ -287,238 +294,6 @@ def create_api_overview_markdown():
     os.makedirs('output/markdown', exist_ok=True)
     with open('output/markdown/api_overview.md', 'w') as file:
         file.write(api_overview_md)
-    #TODO: This function should parse the body.html file and extract the documentation overview and write it to a markdown file.
-    #The overview consists of 4 sections, Introduction, Authentication, Usage, and Response Types.
-    #The Introduction section should be the first h1 element in the body.html file.
-    #The Authentication section should be the first h3 element in the body.html file.
-    #The Usage section should be the second h3 element in the body.html file.
-    #The Response Types section should be the third h3 element in the body.html file.
-    #The Authentication sections contains example of how to pass authenticate using the query string (https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-01-09/2023-01-09?apiKey=*)
-    #The Authentication also contains an example of how to authenticate using headers (Authorization: Bearer)
-    #the two authentication examples should be in code blocks in the markdown file.
-    #See the EXAMPLE_HTML below for an example of the structure and the classes available to pick out the data and parse it.
-    #EXAMPLE_HTML
-    # <div
-    #     class="Grid__Component-sc-h1tb5o-0 Grid__StyledGrid-sc-h1tb5o-1 eKoQMw hNiMUQ StyledSpacing-sc-wahrw5-0 NOTdS">
-    #     <div class="GridItem__StyledGridItem-sc-1xj2soh-0 fUyjCB">
-    #         <div class="ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0 ejmzQM">
-    #             <div class="ScrollTrackedSection__ScrollTarget-sc-1r3wlr6-1 SsvbF"></div>
-    #             <div><a class="ScrollTargetLink__Anchor-sc-yy6ew6-0 iCcuRo"
-    #                     href="https://polygon.io/docs/stocks/getting-started" role="button"
-    #                     tabindex="0" type="button">
-    #                     <h1 class="Text__StyledText-sc-6aor3p-0 cCFnnL Typography__StyledText-sc-102sqjl-0 gHCXHz StyledSpacing-sc-wahrw5-0 bgcozF"
-    #                         color="primary" size="7">Stocks<!-- --> API Documentation</h1>
-    #                 </a>
-    #                 <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 jgWzFC"
-    #                     color="primary" size="4">The Polygon.io Stocks API provides REST endpoints
-    #                     that let you
-    #                     query the latest market data from all US stock exchanges. You
-    #                     can also find data on company financials, stock market
-    #                     holidays, corporate actions, and more.</p>
-    #                 <div class="base__ImageWrapper-sc-m66r7j-1 kTSEDX"><img alt="Documentation"
-    #                         src="/docs/imgs/docs.svg" width="1000" /></div>
-    #                 <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
-    #                     <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
-    #                         color="primary" size="6">Authentication</h3>
-    #                     <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
-    #                         color="primary" size="4">Pass your API key in the query string like
-    #                         follows:</p>
-    #                     <div class="text__IntroBlock-sc-1lz0rk3-4 fCthNE">
-    #                         <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
-    #                             <div class="Container__StyledContainer-sc-83etil-0 fODFXk"
-    #                                 spacing="0">
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
-    #                                     order="0">
-    #                                     <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
-    #                                             class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
-    #                                             color="inherit" height="1.3"
-    #                                             size="2">https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-01-09/2023-01-09?apiKey=*</span>
-    #                                     </div>
-    #                                 </div>
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0"><button
-    #                                         class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
-    #                                             class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
-    #                                                 class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
-    #                                 </div>
-    #                             </div>
-    #                         </div>
-    #                     </div>
-    #                     <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroBlockDescription-sc-1lz0rk3-3 djOhnS"
-    #                         color="primary" size="4">Alternatively, you can add an Authorization
-    #                         header to the request with your API Key as the token in the following
-    #                         form:</p>
-    #                     <div class="Copy__Background-sc-71i6s4-0 cqbdLN">
-    #                         <div class="Container__StyledContainer-sc-83etil-0 fODFXk" spacing="0">
-    #                             <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hOBmCZ"
-    #                                 order="0">
-    #                                 <div class="Copy__TextWrapper-sc-71i6s4-1 bsrJTO"><span
-    #                                         class="Text__StyledText-sc-6aor3p-0 kjHyPJ"
-    #                                         color="inherit" height="1.3" size="2">Authorization:
-    #                                         Bearer &lt;token&gt;</span></div>
-    #                             </div>
-    #                             <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                 order="0"><button
-    #                                     class="Button__StyledButton-sc-1gkx93s-0 hISVkJ Copy__StyledCopyButton-sc-71i6s4-2 kJkhwx"><span
-    #                                         class="styles__CenteredContentSpan-sc-1vm3dn3-1 dfBape"><span
-    #                                             class="styles__CenteredContentSpan-sc-1vm3dn3-1 styles__LoadingSpan-sc-1vm3dn3-2 dfBape eTnjgJ">Copy</span></span></button>
-    #                             </div>
-    #                         </div>
-    #                     </div>
-    #                 </section>
-    #                 <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
-    #                     <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
-    #                         color="primary" size="6">Usage</h3>
-    #                     <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 czACEG"
-    #                         color="primary" size="4">Many of Polygon.io's REST endpoints allow you
-    #                         to<!-- --> <a
-    #                             class="Link__StyledLink-sc-wnesr1-0 cfajpz InlineLink-sc-163zztk-0 fBowrm"
-    #                             href="https://polygon.io/blog/api-pagination-patterns/"
-    #                             size="1">extend query parameters</a> <!-- -->with inequalities
-    #                         like<!-- --> <span class="Text__StyledText-sc-6aor3p-0 bTkseI"
-    #                             color="secondary" size="3">date.lt=2023-01-01</span> <!-- -->(less
-    #                         than) and<!-- --> <span class="Text__StyledText-sc-6aor3p-0 bTkseI"
-    #                             color="secondary" size="3">date.gte=2023-01-01</span>
-    #                         <!-- -->(greater than or equal to) to search ranges of values. You can
-    #                         also use the field name without any extension to query for exact
-    #                         equality. Fields that support extensions will have an "Additional filter
-    #                         parameters" dropdown beneath them in the docs that detail the supported
-    #                         extensions for that parameter.</p>
-    #                 </section>
-    #                 <section class="text__IntroSection-sc-1lz0rk3-2 ewCtP">
-    #                     <h3 class="Text__StyledText-sc-6aor3p-0 hLpLcI Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroSubheader-sc-1lz0rk3-0 duOjBR"
-    #                         color="primary" size="6">Response Types</h3>
-    #                     <p class="Text__StyledText-sc-6aor3p-0 fcoMFQ Typography__StyledText-sc-102sqjl-0 gHCXHz text__IntroParagraph-sc-1lz0rk3-1 czACEG"
-    #                         color="primary" size="4">By default, all endpoints return a JSON
-    #                         response. Users with<!-- --> <span
-    #                             class="base__StyledText-sc-m66r7j-0 hMpQcG" size="4">Stocks</span>
-    #                         <!-- -->Starter plan and above can request a CSV response by
-    #                         including<!-- --> <span class="Text__StyledText-sc-6aor3p-0 bTkseI"
-    #                             color="secondary" size="3">'Accept': 'text/csv'</span> <!-- -->as a
-    #                         request parameter.</p>
-    #                 </section>
-    #             </div>
-    #         </div>
-    #     </div>
-    #     <div class="GridItem__StyledGridItem-sc-1xj2soh-0 jHuWkP">
-    #         <div class="Grid__Component-sc-h1tb5o-0 Grid__StyledGrid-sc-h1tb5o-1 jkEOHr hNiMUQ">
-    #             <div class="GridItem__StyledGridItem-sc-1xj2soh-0 isWvay"></div>
-    #             <div class="GridItem__StyledGridItem-sc-1xj2soh-0 Mqtlr">
-    #                 <div class="StyledSpacing-sc-wahrw5-0 doupJv">
-    #                     <div class="StyledSpacing-sc-wahrw5-0 hKvqOb">
-    #                         <div class="Text__StyledText-sc-6aor3p-0 iGHfaJ SubsectionLabel__StyledLabel-sc-ynvayg-0 kgOCfx"
-    #                             color="secondary" size="3">Client Libraries</div>
-    #                     </div>
-    #                     <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
-    #                             href="https://github.com/polygon-io/client-python"
-    #                             rel="nofollow noreferrer" target="_blank">
-    #                             <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
-    #                                 spacing="0">
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div
-    #                                         class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
-    #                                         <img alt="Python Logo" height="20"
-    #                                             src="/docs/icons/python.svg" width="24" /></div>
-    #                                 </div>
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
-    #                                         color="primary" size="3">Python</div>
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
-    #                                         color="secondary" size="3">client-python</div>
-    #                                 </div>
-    #                             </div>
-    #                         </a></div>
-    #                     <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
-    #                             href="https://github.com/polygon-io/client-go"
-    #                             rel="nofollow noreferrer" target="_blank">
-    #                             <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
-    #                                 spacing="0">
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div
-    #                                         class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
-    #                                         <img alt="Go Logo" height="12" src="/docs/icons/go.svg"
-    #                                             width="32" /></div>
-    #                                 </div>
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
-    #                                         color="primary" size="3">Go</div>
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
-    #                                         color="secondary" size="3">client-go</div>
-    #                                 </div>
-    #                             </div>
-    #                         </a></div>
-    #                     <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
-    #                             href="https://github.com/polygon-io/client-js"
-    #                             rel="nofollow noreferrer" target="_blank">
-    #                             <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
-    #                                 spacing="0">
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div
-    #                                         class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
-    #                                         <img alt="Javascript Logo" height="24"
-    #                                             src="/docs/icons/javascript.svg" width="24" /></div>
-    #                                 </div>
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
-    #                                         color="primary" size="3">Javascript</div>
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
-    #                                         color="secondary" size="3">client-js</div>
-    #                                 </div>
-    #                             </div>
-    #                         </a></div>
-    #                     <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
-    #                             href="https://github.com/polygon-io/client-php"
-    #                             rel="nofollow noreferrer" target="_blank">
-    #                             <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
-    #                                 spacing="0">
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div
-    #                                         class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
-    #                                         <img alt="PHP Logo" height="16"
-    #                                             src="/docs/icons/php.svg" width="31" /></div>
-    #                                 </div>
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
-    #                                         color="primary" size="3">PHP</div>
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
-    #                                         color="secondary" size="3">client-php</div>
-    #                                 </div>
-    #                             </div>
-    #                         </a></div>
-    #                     <div><a class="repoLink__StyledLink-sc-qaanzw-1 erDtuF"
-    #                             href="https://github.com/polygon-io/client-jvm"
-    #                             rel="nofollow noreferrer" target="_blank">
-    #                             <div class="Container__StyledContainer-sc-83etil-0 cibvzg StyledSpacing-sc-wahrw5-0 hYiXxL"
-    #                                 spacing="0">
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div
-    #                                         class="repoLink__ImageWrapper-sc-qaanzw-0 kAmzzR StyledSpacing-sc-wahrw5-0 cHhFWW">
-    #                                         <img alt="Kotlin Logo" height="24"
-    #                                             src="/docs/icons/kotlin.svg" width="24" /></div>
-    #                                 </div>
-    #                                 <div class="ContainerItem__StyledContainerItem-sc-1kmvqlm-0 hQPwVq"
-    #                                     order="0">
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 cBFSFL"
-    #                                         color="primary" size="3">Kotlin</div>
-    #                                     <div class="Text__StyledText-sc-6aor3p-0 ieZVsm"
-    #                                         color="secondary" size="3">client-jvm</div>
-    #                                 </div>
-    #                             </div>
-    #                         </a></div>
-    #                 </div>
-    #             </div>
-    #         </div>
-    #     </div>
-    # </div>
 
 if __name__ == '__main__':
     url = 'https://polygon.io/docs/stocks/getting-started'
