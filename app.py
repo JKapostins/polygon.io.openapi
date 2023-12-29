@@ -466,6 +466,7 @@ def endpoint_response_object(element):
 def create_api_overview_markdown():
     with open('output/html/body.html', 'r') as file:
         soup = BeautifulSoup(file.read(), 'html.parser')
+    api_overview_md = "# Stocks API Documentation\n\n"
 
     overview_section = soup.find('div', class_='ScrollTrackedSection__ScrollTargetWrapper-sc-1r3wlr6-0')
     if overview_section:
@@ -482,6 +483,18 @@ def create_api_overview_markdown():
                 while next_p and next_p.name == 'p':
                     api_overview_md += f"{next_p.get_text().strip()}\n\n"
                     next_p = next_p.find_next_sibling('p')
+
+
+    # Additional sections mentioned in the TODO
+    additional_sections = ['Client Libraries']
+    for section_title in additional_sections:
+        section = soup.find('div', text=section_title)
+        if section:
+            api_overview_md += f"### {section_title}\n\n"
+            next_sibling = section.find_next_sibling()
+            while next_sibling and next_sibling.name != 'div':
+                api_overview_md += f"{next_sibling.get_text().strip()}\n\n"
+                next_sibling = next_sibling.find_next_sibling()
 
     os.makedirs('output/markdown', exist_ok=True)
     with open('output/markdown/api_overview.md', 'w') as file:
