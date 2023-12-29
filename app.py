@@ -341,6 +341,9 @@ def create_modular_reference(output_dir, sections):
         rest_md_dir = f'{output_dir}/{section}/markdown/rest'
         rest_md_files = os.listdir(rest_md_dir)
         for md_file in sorted(rest_md_files):
+        # Place the REST API overview file at the top
+        rest_md_files = sorted(rest_md_files, key=lambda x: (x != 'rest_api_overview.md', x))
+        for md_file in rest_md_files:
             if md_file.endswith('.md'):
                 with open(f'{rest_md_dir}/{md_file}', 'r') as f:
                     first_line = f.readline().strip()
@@ -354,6 +357,9 @@ def create_modular_reference(output_dir, sections):
         reference_md += "\n### WebSocket API\n"
         websocket_md_dir = f'{output_dir}/{section}/markdown/websocket'
         websocket_md_files = os.listdir(websocket_md_dir)
+        # Place the WebSocket API overview file at the top
+        websocket_md_files = sorted(websocket_md_files, key=lambda x: (x != 'websocket_api_overview.md', x))
+        for md_file in websocket_md_files:
         for md_file in sorted(websocket_md_files):
             if md_file.endswith('.md'):
                 with open(f'{websocket_md_dir}/{md_file}', 'r') as f:
